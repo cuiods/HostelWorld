@@ -1,0 +1,36 @@
+server:
+  port: 8080
+spring:
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/hostel?useUnicode=true&characterEncoding=UTF-8
+    username: cuiods
+    password: 0628
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  scheduler:
+    poolSize: 5
+
+endpoints:
+  enabled: false
+
+---
+spring:
+  profiles: dev
+  jpa:
+#    show-sql: true
+    hibernate:
+      format_sql: true
+---
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:mysql://localhost:3306/hostel?useUnicode=true&characterEncoding=UTF-8
+endpoints:
+  enabled: true

@@ -1,16 +1,18 @@
 package edu.nju.data.entity;
 
+import edu.nju.util.enums.MemberState;
+
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
- * Created by cuihao on 2017/1/26.
+ * Hostel member entity.
  */
 @Entity
-@Table(name = "member", schema = "hostel", catalog = "")
-public class MemberEntity {
+@Table(name = "member", schema = "hostel")
+@PrimaryKeyJoinColumn(name = "id")
+public class MemberEntity extends UserEntity{
     private int id;
-    private Serializable state;
+    private MemberState state;
     private Integer level;
     private Integer score;
     private String description;
@@ -27,12 +29,13 @@ public class MemberEntity {
     }
 
     @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "state")
-    public Serializable getState() {
+    public MemberState getState() {
         return state;
     }
 
-    public void setState(Serializable state) {
+    public void setState(MemberState state) {
         this.state = state;
     }
 

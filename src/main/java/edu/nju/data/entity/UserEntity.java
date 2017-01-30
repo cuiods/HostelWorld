@@ -5,8 +5,8 @@ import edu.nju.util.enums.UserType;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * basic user entity.<br/>
@@ -27,7 +27,14 @@ public class UserEntity {
     private Timestamp createdAt;
     private Timestamp updateAt;
     private Timestamp deletedAt;
+    private List<AuthorityEntity> authorityEntities;
+    private List<AccountEntity> accountEntities;
+    private List<MessageEntity> messageEntities;
+    private byte valid;
 
+    /**
+     * the database generates the key
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -37,6 +44,38 @@ public class UserEntity {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_authority", schema = "hostel",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id",nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "auth_id", referencedColumnName = "id",nullable = false))
+    public List<AuthorityEntity> getAuthorityEntities() {
+        return authorityEntities;
+    }
+
+    public void setAuthorityEntities(List<AuthorityEntity> authorityEntities) {
+        this.authorityEntities = authorityEntities;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    public List<AccountEntity> getAccountEntities() {
+        return accountEntities;
+    }
+
+    public void setAccountEntities(List<AccountEntity> accountEntities) {
+        this.accountEntities = accountEntities;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "receive")
+    public List<MessageEntity> getMessageEntities() {
+        return messageEntities;
+    }
+
+    public void setMessageEntities(List<MessageEntity> messageEntities) {
+        this.messageEntities = messageEntities;
     }
 
     @Basic
@@ -131,6 +170,16 @@ public class UserEntity {
         this.deletedAt = deletedAt;
     }
 
+    @Basic
+    @Column(name = "valid")
+    public byte getValid() {
+        return valid;
+    }
+
+    public void setValid(byte valid) {
+        this.valid = valid;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -139,6 +188,7 @@ public class UserEntity {
         UserEntity that = (UserEntity) o;
 
         if (id != that.id) return false;
+        if (valid != that.valid) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (password != null ? !password.equals(that.password) : that.password != null) return false;
         if (phone != null ? !phone.equals(that.phone) : that.phone != null) return false;
@@ -147,7 +197,10 @@ public class UserEntity {
         if (type != that.type) return false;
         if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
         if (updateAt != null ? !updateAt.equals(that.updateAt) : that.updateAt != null) return false;
-        return deletedAt != null ? deletedAt.equals(that.deletedAt) : that.deletedAt == null;
+        if (deletedAt != null ? !deletedAt.equals(that.deletedAt) : that.deletedAt != null) return false;
+        if (authorityEntities != null ? !authorityEntities.equals(that.authorityEntities) : that.authorityEntities != null)
+            return false;
+        return accountEntities != null ? accountEntities.equals(that.accountEntities) : that.accountEntities == null;
     }
 
     @Override
@@ -162,6 +215,10 @@ public class UserEntity {
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (updateAt != null ? updateAt.hashCode() : 0);
         result = 31 * result + (deletedAt != null ? deletedAt.hashCode() : 0);
+        result = 31 * result + (authorityEntities != null ? authorityEntities.hashCode() : 0);
+        result = 31 * result + (accountEntities != null ? accountEntities.hashCode() : 0);
+        result = 31 * result + (int) valid;
         return result;
     }
+
 }

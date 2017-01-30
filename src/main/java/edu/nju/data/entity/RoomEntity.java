@@ -1,22 +1,27 @@
 package edu.nju.data.entity;
 
+import edu.nju.util.enums.BedType;
+import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
- * Created by cuihao on 2017/1/26.
+ * Hotel room plan entity
  */
 @Entity
-@Table(name = "room", schema = "hostel", catalog = "")
+@Table(name = "room", schema = "hostel")
+@Where(clause="deleted_at is null")
 public class RoomEntity {
     private int id;
     private String roomType;
     private Integer size;
     private int people;
-    private Serializable bedType;
+    private BedType bedType;
     private String description;
     private int number;
     private BigDecimal price;
@@ -25,8 +30,10 @@ public class RoomEntity {
     private Date start;
     private Date end;
     private Timestamp deletedAt;
+    private List<PictureEntity> pictureEntities;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public int getId() {
         return id;
@@ -34,6 +41,18 @@ public class RoomEntity {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @ManyToMany
+    @JoinTable(name = "room_picture", schema = "hostel",
+            joinColumns = @JoinColumn(name = "roomid", referencedColumnName = "id",nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "picid", referencedColumnName = "id",nullable = false))
+    public List<PictureEntity> getPictureEntities() {
+        return pictureEntities;
+    }
+
+    public void setPictureEntities(List<PictureEntity> pictureEntities) {
+        this.pictureEntities = pictureEntities;
     }
 
     @Basic
@@ -67,12 +86,13 @@ public class RoomEntity {
     }
 
     @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "bed_type")
-    public Serializable getBedType() {
+    public BedType getBedType() {
         return bedType;
     }
 
-    public void setBedType(Serializable bedType) {
+    public void setBedType(BedType bedType) {
         this.bedType = bedType;
     }
 

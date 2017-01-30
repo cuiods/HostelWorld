@@ -1,24 +1,30 @@
 package edu.nju.data.entity;
 
+import edu.nju.util.enums.HotelStar;
+import edu.nju.util.enums.HotelState;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * Created by cuihao on 2017/1/26.
+ * Hotel entity
  */
 @Entity
-@Table(name = "hotel", schema = "hostel", catalog = "")
-public class HotelEntity {
+@Table(name = "hotel", schema = "hostel")
+@PrimaryKeyJoinColumn(name = "id")
+public class HotelEntity extends UserEntity{
     private int id;
     private String fullname;
-    private Serializable state;
+    private HotelState state;
     private String location;
     private Double locationX;
     private Double locationY;
     private String description;
     private String summary;
-    private Serializable star;
+    private HotelStar star;
     private String picture;
+    private List<RoomEntity> roomEntities;
 
     @Id
     @Column(name = "id")
@@ -28,6 +34,16 @@ public class HotelEntity {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "hotel_id")
+    public List<RoomEntity> getRoomEntities() {
+        return roomEntities;
+    }
+
+    public void setRoomEntities(List<RoomEntity> roomEntities) {
+        this.roomEntities = roomEntities;
     }
 
     @Basic
@@ -41,12 +57,13 @@ public class HotelEntity {
     }
 
     @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "state")
-    public Serializable getState() {
+    public HotelState getState() {
         return state;
     }
 
-    public void setState(Serializable state) {
+    public void setState(HotelState state) {
         this.state = state;
     }
 
@@ -101,12 +118,13 @@ public class HotelEntity {
     }
 
     @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "star")
-    public Serializable getStar() {
+    public HotelStar getStar() {
         return star;
     }
 
-    public void setStar(Serializable star) {
+    public void setStar(HotelStar star) {
         this.star = star;
     }
 
@@ -155,4 +173,6 @@ public class HotelEntity {
         result = 31 * result + (picture != null ? picture.hashCode() : 0);
         return result;
     }
+
+
 }

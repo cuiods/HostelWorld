@@ -6,7 +6,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
- * Created by cuihao on 2017/1/26.
+ * Hotel check in and check out entity
  */
 @Entity
 @Table(name = "check", schema = "hostel", catalog = "")
@@ -21,6 +21,7 @@ public class CheckEntity {
     private Timestamp updateAt;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public int getId() {
         return id;

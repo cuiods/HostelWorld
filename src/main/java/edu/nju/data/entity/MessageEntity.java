@@ -1,11 +1,12 @@
 package edu.nju.data.entity;
 
+import edu.nju.util.enums.MessageState;
+
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
- * Created by cuihao on 2017/1/26.
+ * System message entity
  */
 @Entity
 @Table(name = "message", schema = "hostel", catalog = "")
@@ -13,10 +14,11 @@ public class MessageEntity {
     private int id;
     private String content;
     private String url;
-    private Serializable isRead;
+    private MessageState isRead;
     private Timestamp createdAt;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public int getId() {
         return id;
@@ -47,12 +49,13 @@ public class MessageEntity {
     }
 
     @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "isRead")
-    public Serializable getIsRead() {
+    public MessageState getIsRead() {
         return isRead;
     }
 
-    public void setIsRead(Serializable isRead) {
+    public void setIsRead(MessageState isRead) {
         this.isRead = isRead;
     }
 

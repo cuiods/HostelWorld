@@ -3,16 +3,17 @@ package edu.nju.data.entity;
 import javax.persistence.*;
 
 /**
- * Created by cuihao on 2017/1/26.
+ * Room pictures
  */
 @Entity
-@Table(name = "picture", schema = "hostel", catalog = "")
+@Table(name = "picture", schema = "hostel")
 public class PictureEntity {
     private int id;
     private String url;
     private String alt;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public int getId() {
         return id;

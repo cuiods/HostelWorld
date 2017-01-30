@@ -1,17 +1,22 @@
 package edu.nju.data.entity;
 
+import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
 
 /**
- * Created by cuihao on 2017/1/26.
+ * user bank account
  */
 @Entity
-@Table(name = "account", schema = "hostel", catalog = "")
+@Table(name = "account", schema = "hostel")
 public class AccountEntity {
     private int id;
     private Integer balance;
 
+    private UserEntity userEntity;
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public int getId() {
         return id;
@@ -29,6 +34,16 @@ public class AccountEntity {
 
     public void setBalance(Integer balance) {
         this.balance = balance;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    public UserEntity getUserEntity() {
+        return userEntity;
+    }
+
+    public void setUserEntity(UserEntity userEntity) {
+        this.userEntity = userEntity;
     }
 
     @Override
@@ -50,4 +65,5 @@ public class AccountEntity {
         result = 31 * result + (balance != null ? balance.hashCode() : 0);
         return result;
     }
+
 }

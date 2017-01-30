@@ -3,16 +3,18 @@ package edu.nju.data.entity;
 import javax.persistence.*;
 
 /**
- * Created by cuihao on 2017/1/26.
+ * user authorities.
+ * used for role-based security management.
  */
 @Entity
-@Table(name = "authority", schema = "hostel", catalog = "")
+@Table(name = "authority", schema = "hostel")
 public class AuthorityEntity {
     private int id;
     private String name;
     private String description;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public int getId() {
         return id;

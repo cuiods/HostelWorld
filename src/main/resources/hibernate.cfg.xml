@@ -18,8 +18,6 @@
         <mapping class="edu.nju.data.entity.PictureEntity"/>
         <mapping class="edu.nju.data.entity.ReserveEntity"/>
         <mapping class="edu.nju.data.entity.RoomEntity"/>
-        <mapping class="edu.nju.data.entity.RoomPictureEntity"/>
         <mapping class="edu.nju.data.entity.UserEntity"/>
-        <mapping class="edu.nju.data.entity.UserAuthorityEntity"/>
     </session-factory>
 </hibernate-configuration>

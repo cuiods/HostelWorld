@@ -29,6 +29,7 @@ public class RoomEntity {
     private Date start;
     private Date end;
     private Timestamp deletedAt;
+    private HotelEntity hotelEntity;
     private List<PictureEntity> pictureEntities;
     private List<CheckEntity> checkEntities;
     private List<ReserveEntity> reserveEntities;
@@ -42,6 +43,16 @@ public class RoomEntity {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "hotel_id", referencedColumnName = "id")
+    public HotelEntity getHotelEntity() {
+        return hotelEntity;
+    }
+
+    public void setHotelEntity(HotelEntity hotelEntity) {
+        this.hotelEntity = hotelEntity;
     }
 
     @ManyToMany

@@ -40,7 +40,7 @@ public class ReserveEntity {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "roomid",referencedColumnName = "id")
     public RoomEntity getRoomEntity() {
         return roomEntity;

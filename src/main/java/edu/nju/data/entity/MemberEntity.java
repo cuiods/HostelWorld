@@ -3,6 +3,7 @@ package edu.nju.data.entity;
 import edu.nju.util.enums.MemberState;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Hostel member entity.
@@ -17,6 +18,8 @@ public class MemberEntity extends UserEntity{
     private Integer score;
     private String description;
     private Integer remain;
+    private List<CheckEntity> checkEntities;
+    private List<ReserveEntity> reserveEntities;
 
     @Id
     @Column(name = "id")
@@ -26,6 +29,26 @@ public class MemberEntity extends UserEntity{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "memberid")
+    public List<CheckEntity> getCheckEntities() {
+        return checkEntities;
+    }
+
+    public void setCheckEntities(List<CheckEntity> checkEntities) {
+        this.checkEntities = checkEntities;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "memberid")
+    public List<ReserveEntity> getReserveEntities() {
+        return reserveEntities;
+    }
+
+    public void setReserveEntities(List<ReserveEntity> reserveEntities) {
+        this.reserveEntities = reserveEntities;
     }
 
     @Basic
@@ -106,4 +129,5 @@ public class MemberEntity extends UserEntity{
         result = 31 * result + (remain != null ? remain.hashCode() : 0);
         return result;
     }
+
 }

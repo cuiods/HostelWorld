@@ -4,7 +4,6 @@ import edu.nju.util.enums.BedType;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -31,6 +30,8 @@ public class RoomEntity {
     private Date end;
     private Timestamp deletedAt;
     private List<PictureEntity> pictureEntities;
+    private List<CheckEntity> checkEntities;
+    private List<ReserveEntity> reserveEntities;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,6 +54,26 @@ public class RoomEntity {
 
     public void setPictureEntities(List<PictureEntity> pictureEntities) {
         this.pictureEntities = pictureEntities;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "roomid")
+    public List<CheckEntity> getCheckEntities() {
+        return checkEntities;
+    }
+
+    public void setCheckEntities(List<CheckEntity> checkEntities) {
+        this.checkEntities = checkEntities;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "roomid")
+    public List<ReserveEntity> getReserveEntities() {
+        return reserveEntities;
+    }
+
+    public void setReserveEntities(List<ReserveEntity> reserveEntities) {
+        this.reserveEntities = reserveEntities;
     }
 
     @Basic

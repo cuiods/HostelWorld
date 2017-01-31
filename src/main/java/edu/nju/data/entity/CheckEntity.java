@@ -1,7 +1,9 @@
 package edu.nju.data.entity;
 
+import edu.nju.util.enums.CheckState;
+import edu.nju.util.enums.PayWay;
+
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 
@@ -9,16 +11,18 @@ import java.sql.Timestamp;
  * Hotel check in and check out entity
  */
 @Entity
-@Table(name = "check", schema = "hostel", catalog = "")
+@Table(name = "check", schema = "hostel")
 public class CheckEntity {
     private int id;
-    private Serializable state;
+    private CheckState state;
     private Date date;
     private String nameOne;
     private String nameTwo;
-    private Serializable payway;
+    private PayWay payway;
     private Timestamp createdAt;
     private Timestamp updateAt;
+    private RoomEntity roomEntity;
+    private MemberEntity memberEntity;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,13 +35,34 @@ public class CheckEntity {
         this.id = id;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "roomid",referencedColumnName = "id")
+    public RoomEntity getRoomEntity() {
+        return roomEntity;
+    }
+
+    public void setRoomEntity(RoomEntity roomEntity) {
+        this.roomEntity = roomEntity;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "memberid",referencedColumnName = "id")
+    public MemberEntity getMemberEntity() {
+        return memberEntity;
+    }
+
+    public void setMemberEntity(MemberEntity memberEntity) {
+        this.memberEntity = memberEntity;
+    }
+
     @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "state")
-    public Serializable getState() {
+    public CheckState getState() {
         return state;
     }
 
-    public void setState(Serializable state) {
+    public void setState(CheckState state) {
         this.state = state;
     }
 
@@ -72,12 +97,13 @@ public class CheckEntity {
     }
 
     @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "payway")
-    public Serializable getPayway() {
+    public PayWay getPayway() {
         return payway;
     }
 
-    public void setPayway(Serializable payway) {
+    public void setPayway(PayWay payway) {
         this.payway = payway;
     }
 

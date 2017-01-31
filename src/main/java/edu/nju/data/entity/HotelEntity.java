@@ -4,7 +4,6 @@ import edu.nju.util.enums.HotelStar;
 import edu.nju.util.enums.HotelState;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 
 /**

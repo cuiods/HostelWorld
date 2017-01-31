@@ -1,15 +1,18 @@
 package edu.nju.data.entity;
 
+import edu.nju.util.enums.ReserveState;
+import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
- * Created by cuihao on 2017/1/26.
+ * member reserve record entity
  */
 @Entity
-@Table(name = "reserve", schema = "hostel", catalog = "")
+@Table(name = "reserve", schema = "hostel")
+@Where(clause="deleted_at is null")
 public class ReserveEntity {
     private int id;
     private Date start;
@@ -18,13 +21,16 @@ public class ReserveEntity {
     private String nameTwo;
     private String contact;
     private String email;
-    private Serializable state;
+    private ReserveState state;
     private String extra;
     private Timestamp createdAt;
     private Timestamp updateAt;
     private Timestamp deletedAt;
+    private RoomEntity roomEntity;
+    private MemberEntity memberEntity;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public int getId() {
         return id;
@@ -32,6 +38,26 @@ public class ReserveEntity {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "roomid",referencedColumnName = "id")
+    public RoomEntity getRoomEntity() {
+        return roomEntity;
+    }
+
+    public void setRoomEntity(RoomEntity roomEntity) {
+        this.roomEntity = roomEntity;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "memberid",referencedColumnName = "id")
+    public MemberEntity getMemberEntity() {
+        return memberEntity;
+    }
+
+    public void setMemberEntity(MemberEntity memberEntity) {
+        this.memberEntity = memberEntity;
     }
 
     @Basic
@@ -95,12 +121,13 @@ public class ReserveEntity {
     }
 
     @Basic
+    @Enumerated(EnumType.STRING)
     @Column(name = "state")
-    public Serializable getState() {
+    public ReserveState getState() {
         return state;
     }
 
-    public void setState(Serializable state) {
+    public void setState(ReserveState state) {
         this.state = state;
     }
 

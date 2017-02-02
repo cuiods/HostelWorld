@@ -5,5 +5,5 @@ package edu.nju.util.enums;
  * @author cuihao
  */
 public enum  CheckState {
-    checkIn,checkOut
+    checkIn,checkOut,complete
 }

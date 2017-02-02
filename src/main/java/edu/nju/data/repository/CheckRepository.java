@@ -16,7 +16,5 @@ public interface CheckRepository extends CrudRepository<CheckEntity,Integer>{
 
     List<CheckEntity> findByState(CheckState checkState);
 
-    List<CheckEntity> findByDateBetween(Date start, Date end);
-
     List<CheckEntity> findByCreatedAtLessThan(Timestamp createdAt);
 }

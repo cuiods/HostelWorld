@@ -11,11 +11,10 @@ import java.sql.Timestamp;
  * Hotel check in and check out entity
  */
 @Entity
-@Table(name = "check", schema = "hostel")
+@Table(name = "check", schema = "hostel", catalog = "")
 public class CheckEntity {
     private int id;
     private CheckState state;
-    private Date date;
     private String nameOne;
     private String nameTwo;
     private PayWay payway;
@@ -23,6 +22,8 @@ public class CheckEntity {
     private Timestamp updateAt;
     private RoomEntity roomEntity;
     private MemberEntity memberEntity;
+    private Date start;
+    private Date end;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,16 +65,6 @@ public class CheckEntity {
 
     public void setState(CheckState state) {
         this.state = state;
-    }
-
-    @Basic
-    @Column(name = "date")
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     @Basic
@@ -127,6 +118,26 @@ public class CheckEntity {
         this.updateAt = updateAt;
     }
 
+    @Basic
+    @Column(name = "start")
+    public Date getStart() {
+        return start;
+    }
+
+    public void setStart(Date start) {
+        this.start = start;
+    }
+
+    @Basic
+    @Column(name = "end")
+    public Date getEnd() {
+        return end;
+    }
+
+    public void setEnd(Date end) {
+        this.end = end;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -135,27 +146,27 @@ public class CheckEntity {
         CheckEntity that = (CheckEntity) o;
 
         if (id != that.id) return false;
-        if (state != null ? !state.equals(that.state) : that.state != null) return false;
-        if (date != null ? !date.equals(that.date) : that.date != null) return false;
+        if (state != that.state) return false;
         if (nameOne != null ? !nameOne.equals(that.nameOne) : that.nameOne != null) return false;
         if (nameTwo != null ? !nameTwo.equals(that.nameTwo) : that.nameTwo != null) return false;
-        if (payway != null ? !payway.equals(that.payway) : that.payway != null) return false;
+        if (payway != that.payway) return false;
         if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
         if (updateAt != null ? !updateAt.equals(that.updateAt) : that.updateAt != null) return false;
-
-        return true;
+        if (start != null ? !start.equals(that.start) : that.start != null) return false;
+        return end != null ? end.equals(that.end) : that.end == null;
     }
 
     @Override
     public int hashCode() {
         int result = id;
         result = 31 * result + (state != null ? state.hashCode() : 0);
-        result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (nameOne != null ? nameOne.hashCode() : 0);
         result = 31 * result + (nameTwo != null ? nameTwo.hashCode() : 0);
         result = 31 * result + (payway != null ? payway.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (updateAt != null ? updateAt.hashCode() : 0);
+        result = 31 * result + (start != null ? start.hashCode() : 0);
+        result = 31 * result + (end != null ? end.hashCode() : 0);
         return result;
     }
 }

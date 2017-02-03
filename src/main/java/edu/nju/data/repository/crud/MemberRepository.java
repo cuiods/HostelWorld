@@ -26,4 +26,6 @@ public interface MemberRepository extends CrudRepository<MemberEntity,Integer>{
 
     List<MemberEntity> findByRemainGreaterThan(int remain);
 
+    MemberEntity findByName(String name);
+
 }

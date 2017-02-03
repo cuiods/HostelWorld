@@ -5,13 +5,25 @@ import edu.nju.bl.vo.CheckVo;
 import edu.nju.bl.vo.ReserveVo;
 import edu.nju.bl.vo.ResultVo;
 import edu.nju.bl.vo.RoomVo;
+import edu.nju.data.dao.HotelDao;
+import edu.nju.data.dao.MemberDao;
+import edu.nju.data.dao.ReserveDao;
+import edu.nju.data.dao.RoomDao;
+import edu.nju.data.entity.HotelEntity;
+import edu.nju.data.entity.MemberEntity;
+import edu.nju.data.entity.ReserveEntity;
+import edu.nju.data.entity.RoomEntity;
 import edu.nju.util.enums.BedType;
 import edu.nju.util.enums.PayWay;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Room service impl
@@ -19,6 +31,19 @@ import java.util.List;
  */
 @Service
 public class RoomServiceImpl implements RoomService {
+
+    @Resource
+    private RoomDao roomDao;
+
+    @Resource
+    private HotelDao hotelDao;
+
+    @Resource
+    private MemberDao memberDao;
+
+    @Resource
+    private ReserveDao reserveDao;
+
     /**
      * room reservation service
      *
@@ -36,7 +61,20 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public ResultVo<ReserveVo> reserve(int roomId, int memberId, Date start, Date end,
                                        String nameOne, String nameTwo, String contact, String email, String extra) {
-        return null;
+        if (getRoomNum(roomId, start, end)<=0) {
+            return new ResultVo<>(false,"Not enough room.",null);
+        }
+        ReserveEntity reserveEntity = new ReserveEntity();
+        reserveEntity.setRoomEntity(roomDao.findById(roomId));
+        reserveEntity.setMemberEntity(memberDao.findById(memberId));
+        reserveEntity.setStart(start);
+        reserveEntity.setEnd(end);
+        reserveEntity.setNameOne(nameOne);
+        reserveEntity.setNameTwo(nameTwo);
+        reserveEntity.setContact(contact);
+        reserveEntity.setEmail(email);
+        reserveEntity.setExtra(extra);
+        return new ResultVo<>(true,"Reserve succeed",new ReserveVo(reserveDao.save(reserveEntity)));
     }
 
     /**
@@ -89,7 +127,8 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     public RoomVo getRoomDetail(int roomId, Date start, Date end) {
-        return null;
+        RoomEntity roomEntity = roomDao.findById(roomId);
+        return new RoomVo(roomEntity,getRoomNum(roomId, start, end));
     }
 
     /**
@@ -101,8 +140,23 @@ public class RoomServiceImpl implements RoomService {
      * @return room number
      */
     @Override
+    @Transactional
     public int getRoomNum(int roomId, Date start, Date end) {
-        return 0;
+        RoomEntity roomEntity = roomDao.findById(roomId);
+        if (roomEntity==null) return -1;
+        long reserve = 0;
+        if (roomEntity.getReserveEntities() != null) {
+            reserve = roomEntity.getReserveEntities().stream()
+                    .filter(reserveEntity -> reserveEntity.getEnd().after(start) && reserveEntity.getStart().before(end))
+                    .count();
+        }
+        long check = 0;
+        if (roomEntity.getCheckEntities()!=null) {
+            check = roomEntity.getCheckEntities().stream()
+                    .filter(checkEntity -> checkEntity.getEnd().after(start) && checkEntity.getStart().before(end))
+                    .count();
+        }
+        return roomEntity.getNumber()-Math.toIntExact(reserve)-Math.toIntExact(check);
     }
 
     /**
@@ -133,8 +187,14 @@ public class RoomServiceImpl implements RoomService {
      * @return list of {@link ReserveVo}
      */
     @Override
+    @Transactional
     public List<ReserveVo> getHotelReserve(int hotelId) {
-        return null;
+        HotelEntity hotelEntity = hotelDao.findById(hotelId);
+        if (hotelEntity==null) return new ArrayList<>();
+        return hotelEntity.getRoomEntities().stream()
+                .flatMap(roomEntity -> roomEntity.getReserveEntities().stream())
+                .map(ReserveVo::new)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -144,7 +204,13 @@ public class RoomServiceImpl implements RoomService {
      * @return list of {@link CheckVo}
      */
     @Override
+    @Transactional
     public List<CheckVo> getHotelCheck(int hotelId) {
-        return null;
+        HotelEntity hotelEntity = hotelDao.findById(hotelId);
+        if (hotelEntity==null) return new ArrayList<>();
+        return hotelEntity.getRoomEntities().stream()
+                .flatMap(roomEntity -> roomEntity.getCheckEntities().stream())
+                .map(CheckVo::new)
+                .collect(Collectors.toList());
     }
 }

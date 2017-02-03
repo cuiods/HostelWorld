@@ -13,7 +13,7 @@ import java.util.List;
  * delete strategy: ignore entity if {@code deletedAt} is NOT null.
  */
 @Entity
-@Table(name = "user", schema = "hostel")
+@Table(name = "user")
 @Where(clause="deleted_at is null")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class UserEntity {

@@ -1,4 +1,4 @@
-package edu.nju.data.repository;
+package edu.nju.data.repository.crud;
 
 import edu.nju.data.entity.HotelEntity;
 import edu.nju.util.enums.HotelStar;
@@ -12,6 +12,8 @@ import java.util.List;
  * @author cuihao
  */
 public interface HotelRepository extends CrudRepository<HotelEntity,Integer>{
+
+    HotelEntity findByFullname(String fullname);
 
     List<HotelEntity> findByFullnameLike(String fullname);
 

@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  * member reserve record entity
  */
 @Entity
-@Table(name = "reserve", schema = "hostel")
+@Table(name = "reserve")
 @Where(clause="deleted_at is null")
 public class ReserveEntity {
     private int id;

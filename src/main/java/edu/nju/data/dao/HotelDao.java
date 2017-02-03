@@ -2,6 +2,8 @@ package edu.nju.data.dao;
 
 import edu.nju.data.entity.HotelEntity;
 import edu.nju.util.enums.HotelStar;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -20,6 +22,8 @@ public interface HotelDao {
     List<HotelEntity> findByLocation(double x, double y);
 
     List<HotelEntity> findByStar(HotelStar star);
+
+    Page<HotelEntity> findAll(int page, int pageSize, String sortColumn, Sort.Direction sortDirection);
 
     HotelEntity save(HotelEntity hotelEntity);
 

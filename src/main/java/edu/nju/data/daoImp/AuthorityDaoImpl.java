@@ -2,7 +2,7 @@ package edu.nju.data.daoImp;
 
 import edu.nju.data.dao.AuthorityDao;
 import edu.nju.data.entity.AuthorityEntity;
-import edu.nju.data.repository.AuthorityRepository;
+import edu.nju.data.repository.crud.AuthorityRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;

@@ -38,7 +38,7 @@ public class UserDaoImplTest extends BaseTest{
     @Test
     @Transactional
     public void findByUserName() throws Exception {
-        System.out.println(userDao.findByUserName("cuiods").getAccountEntities().get(0));
+        System.out.println(userDao.findByUserName("cuiods"));
     }
 
     @Test
@@ -52,8 +52,7 @@ public class UserDaoImplTest extends BaseTest{
     public void save() throws Exception {
         UserEntity userEntity = new UserEntity();
         userEntity.setName("cuiods");
-        PasswordEncoder encoder = new StandardPasswordEncoder();
-        userEntity.setPassword(encoder.encode("123456"));
+        userEntity.setPassword("123456");
         userEntity.setPhone("18795859216");
         userEntity.setAvatar("avatar");
         userEntity.setGender(Gender.male);

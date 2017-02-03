@@ -2,7 +2,7 @@ package edu.nju.data.daoImp;
 
 import edu.nju.data.dao.UserDao;
 import edu.nju.data.entity.UserEntity;
-import edu.nju.data.repository.UserRepository;
+import edu.nju.data.repository.crud.UserRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;

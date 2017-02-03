@@ -10,7 +10,7 @@ import java.util.List;
  * Hotel entity
  */
 @Entity
-@Table(name = "hotel", schema = "hostel")
+@Table(name = "hotel")
 @PrimaryKeyJoinColumn(name = "id")
 public class HotelEntity extends UserEntity{
     private int id;

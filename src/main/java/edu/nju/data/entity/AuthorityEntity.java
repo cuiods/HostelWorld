@@ -7,7 +7,7 @@ import javax.persistence.*;
  * used for role-based security management.
  */
 @Entity
-@Table(name = "authority", schema = "hostel")
+@Table(name = "authority")
 public class AuthorityEntity {
     private int id;
     private String name;

@@ -13,7 +13,7 @@ import java.util.List;
  * Hotel room plan entity
  */
 @Entity
-@Table(name = "room", schema = "hostel")
+@Table(name = "room")
 @Where(clause="deleted_at is null")
 public class RoomEntity {
     private int id;

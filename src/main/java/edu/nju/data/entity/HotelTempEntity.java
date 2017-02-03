@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Hotel entity
  */
 @Entity
-@Table(name = "hotel_temp", schema = "hostel")
+@Table(name = "hotel_temp")
 @PrimaryKeyJoinColumn(name = "id")
 public class HotelTempEntity extends UserEntity{
     private int id;

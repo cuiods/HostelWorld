@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  * System message entity
  */
 @Entity
-@Table(name = "message", schema = "hostel", catalog = "")
+@Table(name = "message")
 public class MessageEntity {
     private int id;
     private String content;

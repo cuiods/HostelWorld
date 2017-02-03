@@ -19,12 +19,12 @@ public interface AccountService {
     List<AccountVo> getAccounts(int userId);
 
     /**
-     * Set user default account.
+     * Get available accounts
      * @param userId user id
-     * @param accountId account id
-     * @return {@link AccountVo}
+     * @param money money needed
+     * @return list of available {@link AccountVo}
      */
-    AccountVo setDefaultAccount(int userId, int accountId);
+    List<AccountVo> getAvailableAccounts(int userId, int money);
 
     /**
      * Use account to pay

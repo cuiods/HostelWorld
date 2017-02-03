@@ -1,6 +1,5 @@
 package edu.nju.data.entity;
 
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
@@ -8,7 +7,7 @@ import javax.persistence.*;
  * user bank account
  */
 @Entity
-@Table(name = "account", schema = "hostel")
+@Table(name = "account")
 public class AccountEntity {
     private int id;
     private Integer balance;

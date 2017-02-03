@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class UserVo {
     private int id;
     private String name;
-    private String password;
     private String phone;
     private String avatar;
     private Gender gender;
@@ -30,7 +29,7 @@ public class UserVo {
     private byte valid;
     private List<AuthorityVo> authorityVos;
     public UserVo(UserEntity userEntity) {
-        BeanUtils.copyProperties(userEntity,this,"deletedAt",
+        BeanUtils.copyProperties(userEntity,this,"deletedAt","password",
                 "authorityEntities","accountEntities","messageEntities");
         this.authorityVos = userEntity.getAuthorityEntities().stream()
                 .map(AuthorityVo::new).collect(Collectors.toList());

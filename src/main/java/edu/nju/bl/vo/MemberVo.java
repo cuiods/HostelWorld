@@ -33,7 +33,7 @@ public class MemberVo {
     private byte valid;
 
     public MemberVo(MemberEntity memberEntity) {
-        BeanUtils.copyProperties(memberEntity,this,"deletedAt","authorityEntities",
+        BeanUtils.copyProperties(memberEntity,this,"deletedAt","password","authorityEntities",
                 "accountEntities","messageEntities","checkEntities","reserveEntities");
     }
 }

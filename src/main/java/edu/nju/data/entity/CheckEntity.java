@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  * Hotel check in and check out entity
  */
 @Entity
-@Table(name = "check", schema = "hostel", catalog = "")
+@Table(name = "check")
 public class CheckEntity {
     private int id;
     private CheckState state;

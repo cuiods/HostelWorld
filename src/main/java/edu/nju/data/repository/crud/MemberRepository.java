@@ -1,4 +1,4 @@
-package edu.nju.data.repository;
+package edu.nju.data.repository.crud;
 
 import edu.nju.data.entity.MemberEntity;
 import edu.nju.util.enums.MemberState;

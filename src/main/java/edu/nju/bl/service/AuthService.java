@@ -1,5 +1,6 @@
 package edu.nju.bl.service;
 
+import edu.nju.bl.vo.ResultVo;
 import edu.nju.bl.vo.UserVo;
 import edu.nju.util.enums.Gender;
 import edu.nju.util.enums.UserType;
@@ -11,16 +12,24 @@ import edu.nju.util.enums.UserType;
 public interface AuthService {
 
     /**
-     * Register system user
-     * @param name user name
-     * @param password user password
-     * @param phone phone number
-     * @param avatar user avatar
-     * @param gender gender
-     * @param userType {@link UserType}
+     * Find user by username
+     * @param userName user name
      * @return {@link UserVo}
      */
-    UserVo createUser(String name, String password, String phone, String avatar,
-                      Gender gender, UserType userType);
+    UserVo findByUserName(String userName);
 
+    /**
+     * Find user by userId
+     * @param userId user id
+     * @return {@link UserVo}
+     */
+    UserVo findByUserId(int userId);
+
+    /**
+     * login to system
+     * @param userName user name
+     * @param password password
+     * @return {@link ResultVo<UserVo>}
+     */
+    ResultVo<UserVo> login(String userName, String password);
 }

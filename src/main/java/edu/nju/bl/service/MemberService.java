@@ -4,6 +4,7 @@ import edu.nju.bl.vo.CheckVo;
 import edu.nju.bl.vo.MemberVo;
 import edu.nju.bl.vo.ReserveVo;
 import edu.nju.bl.vo.ResultVo;
+import edu.nju.util.enums.Gender;
 
 import java.util.List;
 
@@ -19,6 +20,13 @@ public interface MemberService {
      * @return {@link MemberVo}
      */
     MemberVo getMemberInfo(int memberId);
+
+    /**
+     * Create member
+     * @return {@link MemberVo}
+     */
+    MemberVo createMember(String name, String password, String phone, String avatar,
+                          Gender gender, String description);
 
     /**
      * Activate member authority.

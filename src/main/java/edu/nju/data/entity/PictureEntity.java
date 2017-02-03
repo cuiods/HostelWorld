@@ -6,7 +6,7 @@ import javax.persistence.*;
  * Room pictures
  */
 @Entity
-@Table(name = "picture", schema = "hostel")
+@Table(name = "picture")
 public class PictureEntity {
     private int id;
     private String url;

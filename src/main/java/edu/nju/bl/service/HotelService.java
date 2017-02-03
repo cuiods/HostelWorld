@@ -1,7 +1,9 @@
 package edu.nju.bl.service;
 
 import edu.nju.bl.vo.HotelVo;
+import edu.nju.util.enums.Gender;
 import edu.nju.util.enums.HotelStar;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -13,11 +15,11 @@ public interface HotelService {
 
     /**
      * Get list of hotel
-     * @param offset offset
-     * @param maxSize maxSize
+     * @param page page number
+     * @param pageSize maxSize
      * @return List of {@link HotelVo}
      */
-    List<HotelVo> getHotelList(int offset, int maxSize);
+    Page<HotelVo> getHotelList(int page, int pageSize);
 
     /**
      * Get detail info of hotel: including rooms
@@ -28,7 +30,6 @@ public interface HotelService {
 
     /**
      * Create hotel
-     * @param userId userId
      * @param fullName full name of hotel
      * @param location hotel location description
      * @param x hotel location x latitude
@@ -39,7 +40,8 @@ public interface HotelService {
      * @param picture hotel picture
      * @return {@link HotelVo}
      */
-    HotelVo createHotel(int userId, String fullName, String location, double x, double y,
+    HotelVo createHotel(String name, String password, String phone, String avatar,
+                        Gender gender, String fullName, String location, double x, double y,
                         String description, String summary, HotelStar hotelStar, String picture);
 
     /**

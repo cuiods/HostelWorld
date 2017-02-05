@@ -1,6 +1,6 @@
 package edu.nju.bl.vo;
 
-import edu.nju.data.entity.CheckEntity;
+import edu.nju.data.entity.CheckRecordEntity;
 import edu.nju.util.enums.CheckState;
 import edu.nju.util.enums.PayWay;
 import lombok.Data;
@@ -28,14 +28,14 @@ public class CheckVo {
     private Timestamp updateAt;
     private RoomVo roomVo;
 
-    public CheckVo(CheckEntity checkEntity) {
-        this(checkEntity,false);
+    public CheckVo(CheckRecordEntity checkRecordEntity) {
+        this(checkRecordEntity,false);
     }
 
-    public CheckVo(CheckEntity checkEntity, boolean hasSession) {
-        BeanUtils.copyProperties(checkEntity,this,"roomEntity","memberEntity");
+    public CheckVo(CheckRecordEntity checkRecordEntity, boolean hasSession) {
+        BeanUtils.copyProperties(checkRecordEntity,this,"roomEntity","memberEntity");
         if (hasSession) {
-            roomVo = new RoomVo(checkEntity.getRoomEntity());
+            roomVo = new RoomVo(checkRecordEntity.getRoomEntity());
         }
     }
 }

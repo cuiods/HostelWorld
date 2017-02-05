@@ -24,7 +24,7 @@ endpoints:
 spring:
   profiles: dev
   jpa:
-#    show-sql: true
+    show-sql: true
     hibernate:
       format_sql: true
 ---

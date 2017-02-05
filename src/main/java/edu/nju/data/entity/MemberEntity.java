@@ -18,7 +18,7 @@ public class MemberEntity extends UserEntity{
     private Integer score;
     private String description;
     private Integer remain;
-    private List<CheckEntity> checkEntities;
+    private List<CheckRecordEntity> checkEntities;
     private List<ReserveEntity> reserveEntities;
 
     @Id
@@ -33,11 +33,11 @@ public class MemberEntity extends UserEntity{
 
     @OneToMany
     @JoinColumn(name = "memberid")
-    public List<CheckEntity> getCheckEntities() {
+    public List<CheckRecordEntity> getCheckEntities() {
         return checkEntities;
     }
 
-    public void setCheckEntities(List<CheckEntity> checkEntities) {
+    public void setCheckEntities(List<CheckRecordEntity> checkEntities) {
         this.checkEntities = checkEntities;
     }
 

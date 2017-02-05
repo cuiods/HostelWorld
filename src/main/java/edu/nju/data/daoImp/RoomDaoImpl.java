@@ -27,4 +27,9 @@ public class RoomDaoImpl implements RoomDao {
     public RoomEntity findById(int id) {
         return roomRepository.findOne(id);
     }
+
+    @Override
+    public RoomEntity save(RoomEntity roomEntity) {
+        return roomRepository.save(roomEntity);
+    }
 }

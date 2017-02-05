@@ -11,7 +11,7 @@
         <property name="hbm2ddl.auto">update</property>
         <mapping class="edu.nju.data.entity.AccountEntity"/>
         <mapping class="edu.nju.data.entity.AuthorityEntity"/>
-        <mapping class="edu.nju.data.entity.CheckEntity"/>
+        <mapping class="edu.nju.data.entity.CheckRecordEntity"/>
         <mapping class="edu.nju.data.entity.HotelEntity"/>
         <mapping class="edu.nju.data.entity.MemberEntity"/>
         <mapping class="edu.nju.data.entity.MessageEntity"/>

@@ -15,4 +15,6 @@ public interface RoomDao {
      */
     RoomEntity findById(int id);
 
+    RoomEntity save(RoomEntity roomEntity);
+
 }

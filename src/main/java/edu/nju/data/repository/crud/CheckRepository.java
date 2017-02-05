@@ -1,10 +1,9 @@
 package edu.nju.data.repository.crud;
 
-import edu.nju.data.entity.CheckEntity;
+import edu.nju.data.entity.CheckRecordEntity;
 import edu.nju.util.enums.CheckState;
 import org.springframework.data.repository.CrudRepository;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -12,9 +11,9 @@ import java.util.List;
  * check in and check out record repository
  * @author cuihao
  */
-public interface CheckRepository extends CrudRepository<CheckEntity,Integer>{
+public interface CheckRepository extends CrudRepository<CheckRecordEntity,Integer>{
 
-    List<CheckEntity> findByState(CheckState checkState);
+    List<CheckRecordEntity> findByState(CheckState checkState);
 
-    List<CheckEntity> findByCreatedAtLessThan(Timestamp createdAt);
+    List<CheckRecordEntity> findByCreatedAtLessThan(Timestamp createdAt);
 }

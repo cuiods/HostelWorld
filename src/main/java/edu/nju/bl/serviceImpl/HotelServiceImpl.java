@@ -1,7 +1,9 @@
 package edu.nju.bl.serviceImpl;
 
 import edu.nju.bl.service.HotelService;
+import edu.nju.bl.service.RoomService;
 import edu.nju.bl.vo.HotelVo;
+import edu.nju.bl.vo.RoomVo;
 import edu.nju.data.dao.HotelDao;
 import edu.nju.data.entity.HotelEntity;
 import edu.nju.util.enums.Gender;
@@ -24,6 +26,9 @@ public class HotelServiceImpl implements HotelService {
 
     @Resource
     private HotelDao hotelDao;
+
+    @Resource
+    private RoomService roomService;
 
     /**
      * Get list of hotel
@@ -49,7 +54,11 @@ public class HotelServiceImpl implements HotelService {
     @Transactional
     public HotelVo getHotelDetail(int hotelId) {
         HotelEntity hotelEntity = hotelDao.findById(hotelId);
-        return null;
+        List<RoomVo> roomVos = hotelEntity.getRoomEntities().stream()
+                .map(roomEntity -> new RoomVo(roomEntity,
+                        roomService.getRoomNum(roomEntity.getId(),roomEntity.getStart(),roomEntity.getEnd())))
+                .collect(Collectors.toList());
+        return new HotelVo(hotelEntity,roomVos);
     }
 
     /**
@@ -65,8 +74,24 @@ public class HotelServiceImpl implements HotelService {
      * @param picture     hotel picture         @return {@link HotelVo}
      */
     @Override
-    public HotelVo createHotel(String name, String password, String phone, String avatar, Gender gender, String fullName, String location, double x, double y, String description, String summary, HotelStar hotelStar, String picture) {
-        return null;
+    public HotelVo createHotel(String name, String password, String phone, String avatar, Gender gender,
+                               String fullName, String location, double x, double y,
+                               String description, String summary, HotelStar hotelStar, String picture) {
+        HotelEntity hotelEntity = new HotelEntity();
+        hotelEntity.setName(name);
+        hotelEntity.setPassword(password);
+        hotelEntity.setPhone(phone);
+        hotelEntity.setAvatar(avatar);
+        hotelEntity.setGender(gender);
+        hotelEntity.setFullname(fullName);
+        hotelEntity.setLocation(location);
+        hotelEntity.setLocationX(x);
+        hotelEntity.setLocationY(y);
+        hotelEntity.setDescription(description);
+        hotelEntity.setSummary(summary);
+        hotelEntity.setStar(hotelStar);
+        hotelEntity.setPicture(picture);
+        return new HotelVo(hotelDao.save(hotelEntity));
     }
 
     /**
@@ -84,7 +109,18 @@ public class HotelServiceImpl implements HotelService {
      * @return {@link HotelVo}
      */
     @Override
-    public HotelVo editHotel(int userId, String fullName, String location, double x, double y, String description, String summary, HotelStar hotelStar, String picture) {
-        return null;
+    public HotelVo editHotel(int userId, String fullName, String location, double x, double y,
+                             String description, String summary, HotelStar hotelStar, String picture) {
+        HotelEntity hotelEntity = hotelDao.findById(userId);
+        if (hotelEntity == null) return null;
+        hotelEntity.setFullname(fullName);
+        hotelEntity.setLocation(location);
+        hotelEntity.setLocationX(x);
+        hotelEntity.setLocationY(y);
+        hotelEntity.setDescription(description);
+        hotelEntity.setSummary(summary);
+        hotelEntity.setStar(hotelStar);
+        hotelEntity.setPicture(picture);
+        return new HotelVo(hotelDao.save(hotelEntity));
     }
 }

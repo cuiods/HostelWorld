@@ -5,15 +5,10 @@ import edu.nju.bl.vo.CheckVo;
 import edu.nju.bl.vo.ReserveVo;
 import edu.nju.bl.vo.ResultVo;
 import edu.nju.bl.vo.RoomVo;
-import edu.nju.data.dao.HotelDao;
-import edu.nju.data.dao.MemberDao;
-import edu.nju.data.dao.ReserveDao;
-import edu.nju.data.dao.RoomDao;
-import edu.nju.data.entity.HotelEntity;
-import edu.nju.data.entity.MemberEntity;
-import edu.nju.data.entity.ReserveEntity;
-import edu.nju.data.entity.RoomEntity;
+import edu.nju.data.dao.*;
+import edu.nju.data.entity.*;
 import edu.nju.util.enums.BedType;
+import edu.nju.util.enums.CheckState;
 import edu.nju.util.enums.PayWay;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +38,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Resource
     private ReserveDao reserveDao;
+
+    @Resource
+    private CheckDao checkDao;
 
     /**
      * room reservation service
@@ -85,7 +83,8 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     public ResultVo<Boolean> cancelReserve(int reserveId) {
-        return null;
+        reserveDao.delete(reserveId);
+        return new ResultVo<>(true,"deleted",true);
     }
 
     /**
@@ -102,7 +101,17 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public ResultVo<CheckVo> checkIn(int roomId, int memberId, Date start, Date end,
                                      String nameOne, String nameTwo) {
-        return null;
+        if (getRoomNum(roomId, start, end) <= 0) {
+            return new ResultVo<>(false,"Not enougn room",null);
+        }
+        CheckRecordEntity checkRecordEntity = new CheckRecordEntity();
+        checkRecordEntity.setRoomEntity(roomDao.findById(roomId));
+        checkRecordEntity.setMemberEntity(memberDao.findById(memberId));
+        checkRecordEntity.setStart(start);
+        checkRecordEntity.setEnd(end);
+        checkRecordEntity.setNameTwo(nameTwo);
+        checkRecordEntity.setNameOne(nameOne);
+        return new ResultVo<>(true,"check in",new CheckVo(checkDao.save(checkRecordEntity)));
     }
 
     /**
@@ -113,8 +122,25 @@ public class RoomServiceImpl implements RoomService {
      * @return {@link ResultVo < CheckVo >}
      */
     @Override
+    @Transactional
     public ResultVo<CheckVo> checkOut(int checkId, PayWay payWay) {
-        return null;
+        CheckRecordEntity checkRecordEntity = checkDao.findById(checkId);
+        if (checkRecordEntity == null) {
+            return new ResultVo<>(false,"Cannot find check in record",null);
+        }
+        checkRecordEntity.setPayway(payWay);
+        if (payWay == PayWay.member) {
+            MemberEntity memberEntity = checkRecordEntity.getMemberEntity();
+            RoomEntity roomEntity = checkRecordEntity.getRoomEntity();
+            int remain = memberEntity.getRemain() - roomEntity.getPrice().intValue();
+            if (remain < 0) {
+                return new ResultVo<>(false,"Not enougn member remain",new CheckVo(checkRecordEntity));
+            }
+            memberEntity.setRemain(remain);
+            memberDao.save(memberEntity);
+            checkRecordEntity.setState(CheckState.complete);
+        }
+        return new ResultVo<>(true,"check out",new CheckVo(checkDao.save(checkRecordEntity)));
     }
 
     /**
@@ -177,7 +203,18 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomVo createRoom(int hotelId, String roomType, int size, int people, BedType bedType,
                              String description, int number, BigDecimal price, Date start, Date end) {
-        return null;
+        RoomEntity roomEntity = new RoomEntity();
+        roomEntity.setHotelEntity(hotelDao.findById(hotelId));
+        roomEntity.setRoomType(roomType);
+        roomEntity.setSize(size);
+        roomEntity.setPeople(people);
+        roomEntity.setBedType(bedType);
+        roomEntity.setDescription(description);
+        roomEntity.setNumber(number);
+        roomEntity.setPrice(price);
+        roomEntity.setStart(start);
+        roomEntity.setEnd(end);
+        return new RoomVo(roomDao.save(roomEntity));
     }
 
     /**

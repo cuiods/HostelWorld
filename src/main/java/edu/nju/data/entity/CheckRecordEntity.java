@@ -8,11 +8,11 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
- * Hotel check in and check out entity
+ * Check entity
  */
 @Entity
-@Table(name = "check")
-public class CheckEntity {
+@Table(name = "check_record")
+public class CheckRecordEntity {
     private int id;
     private CheckState state;
     private String nameOne;
@@ -20,10 +20,10 @@ public class CheckEntity {
     private PayWay payway;
     private Timestamp createdAt;
     private Timestamp updateAt;
-    private RoomEntity roomEntity;
-    private MemberEntity memberEntity;
     private Date start;
     private Date end;
+    private RoomEntity roomEntity;
+    private MemberEntity memberEntity;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class CheckEntity {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "roomid",referencedColumnName = "id")
     public RoomEntity getRoomEntity() {
         return roomEntity;
@@ -143,17 +143,19 @@ public class CheckEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CheckEntity that = (CheckEntity) o;
+        CheckRecordEntity that = (CheckRecordEntity) o;
 
         if (id != that.id) return false;
-        if (state != that.state) return false;
+        if (state != null ? !state.equals(that.state) : that.state != null) return false;
         if (nameOne != null ? !nameOne.equals(that.nameOne) : that.nameOne != null) return false;
         if (nameTwo != null ? !nameTwo.equals(that.nameTwo) : that.nameTwo != null) return false;
-        if (payway != that.payway) return false;
+        if (payway != null ? !payway.equals(that.payway) : that.payway != null) return false;
         if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
         if (updateAt != null ? !updateAt.equals(that.updateAt) : that.updateAt != null) return false;
         if (start != null ? !start.equals(that.start) : that.start != null) return false;
-        return end != null ? end.equals(that.end) : that.end == null;
+        if (end != null ? !end.equals(that.end) : that.end != null) return false;
+
+        return true;
     }
 
     @Override

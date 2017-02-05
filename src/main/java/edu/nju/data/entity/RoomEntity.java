@@ -31,7 +31,7 @@ public class RoomEntity {
     private Timestamp deletedAt;
     private HotelEntity hotelEntity;
     private List<PictureEntity> pictureEntities;
-    private List<CheckEntity> checkEntities;
+    private List<CheckRecordEntity> checkEntities;
     private List<ReserveEntity> reserveEntities;
 
     @Id
@@ -69,11 +69,11 @@ public class RoomEntity {
 
     @OneToMany
     @JoinColumn(name = "roomid")
-    public List<CheckEntity> getCheckEntities() {
+    public List<CheckRecordEntity> getCheckEntities() {
         return checkEntities;
     }
 
-    public void setCheckEntities(List<CheckEntity> checkEntities) {
+    public void setCheckEntities(List<CheckRecordEntity> checkEntities) {
         this.checkEntities = checkEntities;
     }
 

@@ -1,10 +1,8 @@
 package edu.nju.bl.serviceImpl;
 
+import edu.nju.bl.service.MemberService;
 import edu.nju.bl.service.RoomService;
-import edu.nju.bl.vo.CheckVo;
-import edu.nju.bl.vo.ReserveVo;
-import edu.nju.bl.vo.ResultVo;
-import edu.nju.bl.vo.RoomVo;
+import edu.nju.bl.vo.*;
 import edu.nju.data.dao.*;
 import edu.nju.data.entity.*;
 import edu.nju.util.enums.BedType;
@@ -41,6 +39,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Resource
     private CheckDao checkDao;
+
+    @Resource
+    private MemberService memberService;
 
     /**
      * room reservation service
@@ -132,12 +133,10 @@ public class RoomServiceImpl implements RoomService {
         if (payWay == PayWay.member) {
             MemberEntity memberEntity = checkRecordEntity.getMemberEntity();
             RoomEntity roomEntity = checkRecordEntity.getRoomEntity();
-            int remain = memberEntity.getRemain() - roomEntity.getPrice().intValue();
-            if (remain < 0) {
-                return new ResultVo<>(false,"Not enougn member remain",new CheckVo(checkRecordEntity));
+            ResultVo<MemberVo> memberVoResultVo = memberService.memberPay(memberEntity.getId(),roomEntity.getPrice().intValue());
+            if (!memberVoResultVo.isSuccess()) {
+                return new ResultVo<>(false,memberVoResultVo.getMessage(),null);
             }
-            memberEntity.setRemain(remain);
-            memberDao.save(memberEntity);
             checkRecordEntity.setState(CheckState.complete);
         }
         return new ResultVo<>(true,"check out",new CheckVo(checkDao.save(checkRecordEntity)));

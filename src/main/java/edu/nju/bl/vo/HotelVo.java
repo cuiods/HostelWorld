@@ -1,6 +1,7 @@
 package edu.nju.bl.vo;
 
 import edu.nju.data.entity.HotelEntity;
+import edu.nju.data.entity.HotelTempEntity;
 import edu.nju.util.enums.Gender;
 import edu.nju.util.enums.HotelStar;
 import edu.nju.util.enums.HotelState;
@@ -35,6 +36,22 @@ public class HotelVo {
 
     public HotelVo(HotelEntity hotelEntity) {
         this(hotelEntity,null);
+    }
+
+    public HotelVo(HotelTempEntity hotelEntity) {
+        id = hotelEntity.getId();
+        phone = hotelEntity.getPhone();
+        createdAt = hotelEntity.getCreatedAt();
+        updateAt = hotelEntity.getUpdateAt();
+        fullname = hotelEntity.getFullname();
+        state = hotelEntity.getState();
+        location = hotelEntity.getLocation();
+        locationX = hotelEntity.getLocationX();
+        locationY = hotelEntity.getLocationY();
+        description = hotelEntity.getDescription();
+        summary = hotelEntity.getSummary();
+        star = hotelEntity.getStar();
+        picture = hotelEntity.getPicture();
     }
 
     public HotelVo(HotelEntity hotelEntity, List<RoomVo> roomVos) {

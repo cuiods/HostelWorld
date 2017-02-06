@@ -5,9 +5,14 @@ import edu.nju.bl.service.RoomService;
 import edu.nju.bl.vo.HotelVo;
 import edu.nju.bl.vo.RoomVo;
 import edu.nju.data.dao.HotelDao;
+import edu.nju.data.dao.HotelTempDao;
 import edu.nju.data.entity.HotelEntity;
+import edu.nju.data.entity.HotelTempEntity;
 import edu.nju.util.enums.Gender;
 import edu.nju.util.enums.HotelStar;
+import edu.nju.util.enums.HotelState;
+import edu.nju.util.enums.UserType;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
@@ -26,6 +31,9 @@ public class HotelServiceImpl implements HotelService {
 
     @Resource
     private HotelDao hotelDao;
+
+    @Resource
+    private HotelTempDao hotelTempDao;
 
     @Resource
     private RoomService roomService;
@@ -83,6 +91,8 @@ public class HotelServiceImpl implements HotelService {
         hotelEntity.setPhone(phone);
         hotelEntity.setAvatar(avatar);
         hotelEntity.setGender(gender);
+        hotelEntity.setType(UserType.hotel);
+        hotelEntity.setValid((byte) 0);
         hotelEntity.setFullname(fullName);
         hotelEntity.setLocation(location);
         hotelEntity.setLocationX(x);
@@ -91,6 +101,7 @@ public class HotelServiceImpl implements HotelService {
         hotelEntity.setSummary(summary);
         hotelEntity.setStar(hotelStar);
         hotelEntity.setPicture(picture);
+        hotelEntity.setState(HotelState.newly);
         return new HotelVo(hotelDao.save(hotelEntity));
     }
 
@@ -113,14 +124,17 @@ public class HotelServiceImpl implements HotelService {
                              String description, String summary, HotelStar hotelStar, String picture) {
         HotelEntity hotelEntity = hotelDao.findById(userId);
         if (hotelEntity == null) return null;
-        hotelEntity.setFullname(fullName);
-        hotelEntity.setLocation(location);
-        hotelEntity.setLocationX(x);
-        hotelEntity.setLocationY(y);
-        hotelEntity.setDescription(description);
-        hotelEntity.setSummary(summary);
-        hotelEntity.setStar(hotelStar);
-        hotelEntity.setPicture(picture);
-        return new HotelVo(hotelDao.save(hotelEntity));
+        HotelTempEntity hotelTempEntity = new HotelTempEntity();
+        BeanUtils.copyProperties(hotelEntity,hotelTempEntity);
+        hotelTempEntity.setFullname(fullName);
+        hotelTempEntity.setLocation(location);
+        hotelTempEntity.setLocationX(x);
+        hotelTempEntity.setLocationY(y);
+        hotelTempEntity.setDescription(description);
+        hotelTempEntity.setSummary(summary);
+        hotelTempEntity.setStar(hotelStar);
+        hotelTempEntity.setPicture(picture);
+        hotelTempEntity.setState(HotelState.edit);
+        return new HotelVo(hotelTempDao.save(hotelTempEntity));
     }
 }

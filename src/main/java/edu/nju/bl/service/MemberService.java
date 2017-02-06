@@ -56,7 +56,7 @@ public interface MemberService {
      * @param score score to exchange
      * @return {@link ResultVo<MemberVo>}
      */
-    ResultVo<MemberVo> exchangeScore(int score);
+    ResultVo<MemberVo> exchangeScore(int memberId, int score);
 
     /**
      * Use member remain to pay

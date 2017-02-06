@@ -2,16 +2,20 @@ package edu.nju.bl.serviceImpl;
 
 import edu.nju.bl.service.AccountService;
 import edu.nju.bl.service.MemberService;
+import edu.nju.bl.strategy.ExchangeScoreStrategy;
 import edu.nju.bl.vo.*;
 import edu.nju.data.dao.MemberDao;
 import edu.nju.data.entity.MemberEntity;
 import edu.nju.util.enums.Gender;
 import edu.nju.util.enums.MemberState;
+import edu.nju.util.enums.UserType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * member service impl
@@ -25,6 +29,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Resource
     private AccountService accountService;
+
+    @Resource
+    private ExchangeScoreStrategy exchangeScoreStrategy;
 
     /**
      * Get member basic person info, not including extra info.
@@ -50,8 +57,11 @@ public class MemberServiceImpl implements MemberService {
         memberEntity.setPassword(password);
         memberEntity.setPhone(phone);
         memberEntity.setAvatar(avatar);
+        memberEntity.setType(UserType.member);
+        memberEntity.setValid((byte) 0);
         memberEntity.setGender(gender);
         memberEntity.setDescription(description);
+        memberEntity.setState(MemberState.newly);
         return new MemberVo(memberEntity);
     }
 
@@ -112,8 +122,15 @@ public class MemberServiceImpl implements MemberService {
      * @return {@link ResultVo < MemberVo >}
      */
     @Override
-    public ResultVo<MemberVo> exchangeScore(int score) {
-        return null;
+    @Transactional
+    public ResultVo<MemberVo> exchangeScore(int memberId, int score) {
+        MemberEntity memberEntity = memberDao.findById(memberId);
+        if (memberEntity == null) return new ResultVo<>(false,"Cannot find member.",null);
+        int remainScore = memberEntity.getScore() - score;
+        if (remainScore < 0) return new ResultVo<>(false,"Not enough score",null);
+        memberEntity.setScore(remainScore);
+        memberEntity.setRemain(exchangeScoreStrategy.exchange(score)+memberEntity.getScore());
+        return new ResultVo<>(true,"Success",new MemberVo(memberDao.save(memberEntity)));
     }
 
     /**
@@ -124,8 +141,16 @@ public class MemberServiceImpl implements MemberService {
      * @return {@link ResultVo < MemberVo >}
      */
     @Override
+    @Transactional
     public ResultVo<MemberVo> memberPay(int memberId, int payNum) {
-        return null;
+        MemberEntity memberEntity = memberDao.findById(memberId);
+        if (memberEntity == null) return new ResultVo<>(false,"Cannot find member.",null);
+        int remain = memberEntity.getRemain() - payNum;
+        if (remain < 0) {
+            return new ResultVo<>(false,"Not enough member remain",null);
+        }
+        memberEntity.setRemain(remain);
+        return new ResultVo<>(true,"Success",new MemberVo(memberDao.save(memberEntity)));
     }
 
     /**
@@ -135,8 +160,12 @@ public class MemberServiceImpl implements MemberService {
      * @return list of {@link ReserveVo}
      */
     @Override
+    @Transactional
     public List<ReserveVo> getMemberReserve(int memberId) {
-        return null;
+        MemberEntity memberEntity = memberDao.findById(memberId);
+        if (memberEntity == null) return new ArrayList<>();
+        return memberEntity.getReserveEntities().stream()
+                .map(ReserveVo::new).collect(Collectors.toList());
     }
 
     /**
@@ -147,6 +176,9 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public List<CheckVo> getMemberCheck(int memberId) {
-        return null;
+        MemberEntity memberEntity = memberDao.findById(memberId);
+        if (memberEntity == null) return new ArrayList<>();
+        return memberEntity.getCheckEntities().stream()
+                .map(CheckVo::new).collect(Collectors.toList());
     }
 }

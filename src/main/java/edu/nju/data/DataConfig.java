@@ -1,6 +1,7 @@
 package edu.nju.data;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
@@ -8,6 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * @author cuihao
  */
 @EnableJpaRepositories
-@SpringBootApplication
+@Configuration
 public class DataConfig {
 }

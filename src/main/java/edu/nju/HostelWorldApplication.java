@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * @version 0.1
  */
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "edu.nju.data.repository")
 public class HostelWorldApplication {
 
     public static void main(String[] args) {

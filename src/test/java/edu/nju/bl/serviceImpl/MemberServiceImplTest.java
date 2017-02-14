@@ -4,6 +4,7 @@ import edu.nju.BaseTest;
 import edu.nju.bl.service.MemberService;
 import edu.nju.util.enums.Gender;
 import org.junit.Test;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import javax.annotation.Resource;
 
@@ -12,6 +13,7 @@ import static org.junit.Assert.*;
 /**
  * Member service test
  */
+@WithMockUser(username = "member")
 public class MemberServiceImplTest extends BaseTest {
 
     @Resource
@@ -30,7 +32,7 @@ public class MemberServiceImplTest extends BaseTest {
 
     @Test
     public void activeMember() throws Exception {
-        System.out.println(memberService.transferToRemain(20,5,2000));
+        System.out.println(memberService.transferToRemain(16,2,1000));
     }
 
     @Test

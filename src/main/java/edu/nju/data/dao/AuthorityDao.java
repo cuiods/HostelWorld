@@ -30,4 +30,34 @@ public interface AuthorityDao {
      */
     AuthorityEntity findByName(String name);
 
+    /**
+     * Find active members' authorities
+     * @return list of {@link AuthorityEntity}
+     */
+    List<AuthorityEntity> findMemberActive();
+
+    /**
+     * Find suspended member authorities
+     * @return list of {@link AuthorityEntity}
+     */
+    List<AuthorityEntity> findMemberPause();
+
+    /**
+     * Find active hotel authorities
+     * @return list of {@link AuthorityEntity}
+     */
+    List<AuthorityEntity> findHotelActive();
+
+    /**
+     * Find suspended hotel authority
+     * @return list of {@link AuthorityEntity}
+     */
+    List<AuthorityEntity> findHotelPause();
+
+    /**
+     * Find manager's authorities
+     * @return list of {@link AuthorityEntity}
+     */
+    List<AuthorityEntity> findManager();
+
 }

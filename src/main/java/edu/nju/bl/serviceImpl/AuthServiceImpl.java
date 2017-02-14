@@ -5,6 +5,8 @@ import edu.nju.bl.vo.ResultVo;
 import edu.nju.bl.vo.UserVo;
 import edu.nju.data.dao.UserDao;
 import edu.nju.data.entity.UserEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -72,5 +74,35 @@ public class AuthServiceImpl implements AuthService {
             }
         }
         return userVoResultVo;
+    }
+
+    /**
+     * Verify the operation changes the user's own profile
+     *
+     * @param userId user id to be changed
+     * @return is self
+     */
+    @Override
+    public boolean isSelf(int userId) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserEntity userEntity = userDao.findByUserName(userDetails.getUsername());
+        return userEntity!=null && userEntity.getId() == userId;
+    }
+
+    /**
+     * Get current user.
+     *
+     * @return current user
+     */
+    @Override
+    public UserEntity getCurrentUser() {
+        UserDetails userDetails = null;
+        try {
+            userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (Exception e) {
+            return null;
+        }
+        if (userDetails!=null) return userDao.findByUserName(userDetails.getUsername());
+        return null;
     }
 }

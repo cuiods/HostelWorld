@@ -1,6 +1,7 @@
 package edu.nju.bl.serviceImpl;
 
 import edu.nju.bl.service.AccountService;
+import edu.nju.bl.service.AuthService;
 import edu.nju.bl.service.MemberService;
 import edu.nju.bl.strategy.ExchangeScoreStrategy;
 import edu.nju.bl.vo.*;
@@ -10,6 +11,7 @@ import edu.nju.data.entity.AuthorityEntity;
 import edu.nju.data.entity.MemberEntity;
 import edu.nju.util.constant.AuthorityConstant;
 import edu.nju.util.constant.MemberConstant;
+import edu.nju.util.constant.MessageConstant;
 import edu.nju.util.enums.Gender;
 import edu.nju.util.enums.MemberState;
 import edu.nju.util.enums.UserType;
@@ -34,10 +36,13 @@ public class MemberServiceImpl implements MemberService {
     private MemberDao memberDao;
 
     @Resource
-    private AccountService accountService;
+    private AuthorityDao authorityDao;
 
     @Resource
-    private AuthorityDao authorityDao;
+    private AuthService authService;
+
+    @Resource
+    private AccountService accountService;
 
     @Resource
     private ExchangeScoreStrategy exchangeScoreStrategy;
@@ -92,7 +97,11 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public ResultVo<MemberVo> transferToRemain(int memberId, int accountId, int money) {
         MemberEntity memberEntity = memberDao.findById(memberId);
-        if (memberEntity==null) return new ResultVo<>(false,"Cannot find member.",null);
+        if (memberEntity==null) return new ResultVo<>(false, MessageConstant.MEMBER_NOT_FOUND,null);
+        long count = memberEntity.getAccountEntities().stream()
+                .filter(accountEntity -> accountEntity.getId() == accountId).count();
+        if (count==0) return new ResultVo<>(false,MessageConstant.ACCOUNT_CONFLICT,null);
+        if (!authService.isSelf(memberId)) return new ResultVo<>(false,MessageConstant.MEMBER_CONFLICT,null);
         ResultVo<AccountVo> accountVoResultVo = accountService.accountPay(accountId,money);
         if (!accountVoResultVo.isSuccess()) {
             return new ResultVo<>(false,accountVoResultVo.getMessage(),null);
@@ -101,8 +110,9 @@ public class MemberServiceImpl implements MemberService {
         if (memberEntity.getRemain()>=MemberConstant.ACTIVE_REMAIN) {
             memberEntity.setState(MemberState.active);
             memberEntity.setActiveDate(new Date(System.currentTimeMillis()));
+            memberEntity.setAuthorityEntities(authorityDao.findMemberActive());
         }
-        return new ResultVo<>(true,"Active succeed.",new MemberVo(memberDao.save(memberEntity)));
+        return new ResultVo<>(true,MessageConstant.SUCCESS,new MemberVo(memberDao.save(memberEntity)));
     }
 
     /**
@@ -114,9 +124,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public ResultVo<MemberVo> stopMember(int memberId) {
         MemberEntity memberEntity = memberDao.findById(memberId);
-        if (memberEntity==null) return new ResultVo<>(false,"Cannot find member.",null);
+        if (memberEntity==null) return new ResultVo<>(false,MessageConstant.MEMBER_NOT_FOUND,null);
+        if (!authService.isSelf(memberId)) return new ResultVo<>(false,MessageConstant.MEMBER_CONFLICT,null);
         memberEntity.setState(MemberState.stop);
-        return new ResultVo<>(true,"Member stopped.",new MemberVo(memberDao.save(memberEntity)));
+        return new ResultVo<>(true,MessageConstant.SUCCESS,new MemberVo(memberDao.save(memberEntity)));
     }
 
     /**
@@ -128,9 +139,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public ResultVo<MemberVo> pauseMember(int memberId) {
         MemberEntity memberEntity = memberDao.findById(memberId);
-        if (memberEntity==null) return new ResultVo<>(false,"Cannot find member.",null);
+        if (memberEntity==null) return new ResultVo<>(false,MessageConstant.MEMBER_NOT_FOUND,null);
+        if (!authService.isSelf(memberId)) return new ResultVo<>(false,MessageConstant.MEMBER_CONFLICT,null);
         memberEntity.setState(MemberState.pause);
-        return new ResultVo<>(true,"Member suspended.",new MemberVo(memberDao.save(memberEntity)));
+        return new ResultVo<>(true,MessageConstant.SUCCESS,new MemberVo(memberDao.save(memberEntity)));
     }
 
     /**
@@ -143,12 +155,13 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public ResultVo<MemberVo> exchangeScore(int memberId, int score) {
         MemberEntity memberEntity = memberDao.findById(memberId);
-        if (memberEntity == null) return new ResultVo<>(false,"Cannot find member.",null);
+        if (memberEntity == null) return new ResultVo<>(false,MessageConstant.MEMBER_NOT_FOUND,null);
+        if (!authService.isSelf(memberId)) return new ResultVo<>(false,MessageConstant.MEMBER_CONFLICT,null);
         int remainScore = memberEntity.getScore() - score;
-        if (remainScore < 0) return new ResultVo<>(false,"Not enough score",null);
+        if (remainScore < 0) return new ResultVo<>(false,MessageConstant.SCORE_NOT_ENOUGH,null);
         memberEntity.setScore(remainScore);
         memberEntity.setRemain(exchangeScoreStrategy.exchange(score)+memberEntity.getScore());
-        return new ResultVo<>(true,"Success",new MemberVo(memberDao.save(memberEntity)));
+        return new ResultVo<>(true,MessageConstant.SUCCESS,new MemberVo(memberDao.save(memberEntity)));
     }
 
     /**
@@ -162,14 +175,15 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public ResultVo<MemberVo> memberPay(int memberId, int payNum) {
         MemberEntity memberEntity = memberDao.findById(memberId);
-        if (memberEntity == null) return new ResultVo<>(false,"Cannot find member.",null);
+        if (memberEntity == null) return new ResultVo<>(false,MessageConstant.MEMBER_NOT_FOUND,null);
+        if (!authService.isSelf(memberId)) return new ResultVo<>(false,MessageConstant.MEMBER_CONFLICT,null);
         int remain = memberEntity.getRemain() - payNum;
         if (remain < 0) {
-            return new ResultVo<>(false,"Not enough member remain",null);
+            return new ResultVo<>(false,MessageConstant.REMAIN_NOT_ENOUGH,null);
         }
         memberEntity.setRemain(remain);
         memberEntity.setScore(memberEntity.getScore()+payNum);
-        return new ResultVo<>(true,"Success",new MemberVo(memberDao.save(memberEntity)));
+        return new ResultVo<>(true,MessageConstant.SUCCESS,new MemberVo(memberDao.save(memberEntity)));
     }
 
     /**
@@ -220,6 +234,7 @@ public class MemberServiceImpl implements MemberService {
                 .collect(Collectors.toList())
                 .forEach(memberEntity -> {
                     memberEntity.setState(MemberState.pause);
+                    memberEntity.setAuthorityEntities(authorityDao.findMemberPause());
                     memberDao.save(memberEntity);
                 });
         memberEntities.stream()
@@ -229,7 +244,11 @@ public class MemberServiceImpl implements MemberService {
                 .collect(Collectors.toList())
                 .forEach(memberEntity -> {
                     memberEntity.setState(MemberState.stop);
+                    List<AuthorityEntity> authorityEntities = new ArrayList<>();
+                    authorityEntities.add(authorityDao.findByName(AuthorityConstant.USER_BASE));
+                    memberEntity.setAuthorityEntities(authorityEntities);
                     memberDao.save(memberEntity);
                 });
     }
+
 }

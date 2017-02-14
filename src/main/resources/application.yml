@@ -14,9 +14,6 @@ spring:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
-  scheduler:
-    poolSize: 5
-
 endpoints:
   enabled: false
 
@@ -25,8 +22,6 @@ spring:
   profiles: dev
   jpa:
     show-sql: true
-    hibernate:
-      format_sql: true
 ---
 spring:
   profiles: prod

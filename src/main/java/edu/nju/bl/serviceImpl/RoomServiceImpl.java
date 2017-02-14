@@ -5,6 +5,7 @@ import edu.nju.bl.service.RoomService;
 import edu.nju.bl.vo.*;
 import edu.nju.data.dao.*;
 import edu.nju.data.entity.*;
+import edu.nju.util.constant.MessageConstant;
 import edu.nju.util.enums.BedType;
 import edu.nju.util.enums.CheckState;
 import edu.nju.util.enums.PayWay;
@@ -58,14 +59,20 @@ public class RoomServiceImpl implements RoomService {
      * @return {@link ResultVo < ReserveVo >}
      */
     @Override
+    @Transactional
     public ResultVo<ReserveVo> reserve(int roomId, int memberId, Date start, Date end,
                                        String nameOne, String nameTwo, String contact, String email, String extra) {
         if (getRoomNum(roomId, start, end)<=0) {
-            return new ResultVo<>(false,"Not enough room.",null);
+            return new ResultVo<>(false, MessageConstant.ROOM_NOT_ENOUGH,null);
         }
+        RoomEntity roomEntity = roomDao.findById(roomId);
+        MemberEntity memberEntity = memberDao.findById(memberId);
+        if (memberEntity.getRemain()<roomEntity.getPrice().intValue())
+            return new ResultVo<>(false,MessageConstant.REMAIN_NOT_ENOUGH,null);
+        memberEntity.setRemain(memberEntity.getRemain()-roomEntity.getPrice().intValue());
         ReserveEntity reserveEntity = new ReserveEntity();
-        reserveEntity.setRoomEntity(roomDao.findById(roomId));
-        reserveEntity.setMemberEntity(memberDao.findById(memberId));
+        reserveEntity.setRoomEntity(roomEntity);
+        reserveEntity.setMemberEntity(memberEntity);
         reserveEntity.setStart(start);
         reserveEntity.setEnd(end);
         reserveEntity.setNameOne(nameOne);
@@ -73,7 +80,7 @@ public class RoomServiceImpl implements RoomService {
         reserveEntity.setContact(contact);
         reserveEntity.setEmail(email);
         reserveEntity.setExtra(extra);
-        return new ResultVo<>(true,"Reserve succeed",new ReserveVo(reserveDao.save(reserveEntity)));
+        return new ResultVo<>(true,MessageConstant.SUCCESS,new ReserveVo(reserveDao.save(reserveEntity)));
     }
 
     /**

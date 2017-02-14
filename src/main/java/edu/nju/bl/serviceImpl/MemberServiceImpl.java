@@ -4,15 +4,21 @@ import edu.nju.bl.service.AccountService;
 import edu.nju.bl.service.MemberService;
 import edu.nju.bl.strategy.ExchangeScoreStrategy;
 import edu.nju.bl.vo.*;
+import edu.nju.data.dao.AuthorityDao;
 import edu.nju.data.dao.MemberDao;
+import edu.nju.data.entity.AuthorityEntity;
 import edu.nju.data.entity.MemberEntity;
+import edu.nju.util.constant.AuthorityConstant;
+import edu.nju.util.constant.MemberConstant;
 import edu.nju.util.enums.Gender;
 import edu.nju.util.enums.MemberState;
 import edu.nju.util.enums.UserType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +35,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Resource
     private AccountService accountService;
+
+    @Resource
+    private AuthorityDao authorityDao;
 
     @Resource
     private ExchangeScoreStrategy exchangeScoreStrategy;
@@ -62,7 +71,13 @@ public class MemberServiceImpl implements MemberService {
         memberEntity.setGender(gender);
         memberEntity.setDescription(description);
         memberEntity.setState(MemberState.newly);
-        return new MemberVo(memberEntity);
+        memberEntity.setLevel(0);
+        memberEntity.setScore(0);
+        memberEntity.setRemain(0);
+        List<AuthorityEntity> authorityEntities = new ArrayList<>();
+        authorityEntities.add(authorityDao.findByName(AuthorityConstant.USER_BASE));
+        memberEntity.setAuthorityEntities(authorityEntities);
+        return new MemberVo(memberDao.save(memberEntity));
     }
 
     /**
@@ -75,7 +90,7 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     @Transactional
-    public ResultVo<MemberVo> activeMember(int memberId, int accountId, int money) {
+    public ResultVo<MemberVo> transferToRemain(int memberId, int accountId, int money) {
         MemberEntity memberEntity = memberDao.findById(memberId);
         if (memberEntity==null) return new ResultVo<>(false,"Cannot find member.",null);
         ResultVo<AccountVo> accountVoResultVo = accountService.accountPay(accountId,money);
@@ -83,7 +98,10 @@ public class MemberServiceImpl implements MemberService {
             return new ResultVo<>(false,accountVoResultVo.getMessage(),null);
         }
         memberEntity.setRemain(memberEntity.getRemain()+money);
-        memberEntity.setState(MemberState.active);
+        if (memberEntity.getRemain()>=MemberConstant.ACTIVE_REMAIN) {
+            memberEntity.setState(MemberState.active);
+            memberEntity.setActiveDate(new Date(System.currentTimeMillis()));
+        }
         return new ResultVo<>(true,"Active succeed.",new MemberVo(memberDao.save(memberEntity)));
     }
 
@@ -150,6 +168,7 @@ public class MemberServiceImpl implements MemberService {
             return new ResultVo<>(false,"Not enough member remain",null);
         }
         memberEntity.setRemain(remain);
+        memberEntity.setScore(memberEntity.getScore()+payNum);
         return new ResultVo<>(true,"Success",new MemberVo(memberDao.save(memberEntity)));
     }
 
@@ -175,10 +194,42 @@ public class MemberServiceImpl implements MemberService {
      * @return list of {@link CheckVo}
      */
     @Override
+    @Transactional
     public List<CheckVo> getMemberCheck(int memberId) {
         MemberEntity memberEntity = memberDao.findById(memberId);
         if (memberEntity == null) return new ArrayList<>();
         return memberEntity.getCheckEntities().stream()
                 .map(CheckVo::new).collect(Collectors.toList());
+    }
+
+    /**
+     * Check member active date
+     */
+    @Override
+    @Scheduled(cron = "0 0 2 * * ?")
+    public void checkMemberState() {
+        Date oneYearBefore = new Date(System.currentTimeMillis());
+        oneYearBefore.setYear(oneYearBefore.getYear()-MemberConstant.ACTIVE_YEAR);
+        Date twoYearBefore = new Date(System.currentTimeMillis());
+        twoYearBefore.setYear(twoYearBefore.getYear()-MemberConstant.PAUSE_YEAR);
+        List<MemberEntity> memberEntities = memberDao.findAll();
+        memberEntities.stream()
+                .filter(memberEntity -> memberEntity.getActiveDate()!=null)
+                .filter(memberEntity -> memberEntity.getActiveDate().before(oneYearBefore)
+                        && memberEntity.getState() == MemberState.active && memberEntity.getRemain()< MemberConstant.ACTIVE_REMAIN)
+                .collect(Collectors.toList())
+                .forEach(memberEntity -> {
+                    memberEntity.setState(MemberState.pause);
+                    memberDao.save(memberEntity);
+                });
+        memberEntities.stream()
+                .filter(memberEntity -> memberEntity.getActiveDate()!=null)
+                .filter(memberEntity -> memberEntity.getActiveDate().before(twoYearBefore)
+                        && memberEntity.getState() == MemberState.pause)
+                .collect(Collectors.toList())
+                .forEach(memberEntity -> {
+                    memberEntity.setState(MemberState.stop);
+                    memberDao.save(memberEntity);
+                });
     }
 }

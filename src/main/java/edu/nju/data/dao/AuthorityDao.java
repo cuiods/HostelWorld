@@ -5,7 +5,7 @@ import edu.nju.data.entity.AuthorityEntity;
 import java.util.List;
 
 /**
- * Authority data access object
+ * AuthorityConstant data access object
  * @author cuihao
  */
 public interface AuthorityDao {

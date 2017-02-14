@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * Authority dao impl
+ * AuthorityConstant dao impl
  * @author cuihao
  */
 @Repository

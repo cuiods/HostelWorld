@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 import static org.junit.Assert.*;
 
 /**
- * Authority dao test
+ * AuthorityConstant dao test
  */
 public class AuthorityDaoImplTest extends BaseTest {
 

@@ -17,6 +17,7 @@ public class ExchangeScoreStrategyImpl implements ExchangeScoreStrategy {
      */
     @Override
     public int exchange(int score) {
-        return 0;
+        if (score == 0) return 0;
+        return score/100;
     }
 }

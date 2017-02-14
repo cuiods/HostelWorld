@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
 /**
- * Authority entity vo
+ * AuthorityConstant entity vo
  * @author cuihao
  */
 @Data

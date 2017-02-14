@@ -35,7 +35,7 @@ public interface MemberService {
      * @param money activate money
      * @return {@link ResultVo<MemberVo>}
      */
-    ResultVo<MemberVo> activeMember(int memberId, int accountId, int money);
+    ResultVo<MemberVo> transferToRemain(int memberId, int accountId, int money);
 
     /**
      * Stop member authority
@@ -79,5 +79,10 @@ public interface MemberService {
      * @return list of {@link CheckVo}
      */
     List<CheckVo> getMemberCheck(int memberId);
+
+    /**
+     * Check member active date
+     */
+    void checkMemberState();
 
 }

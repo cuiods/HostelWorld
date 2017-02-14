@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
@@ -31,6 +32,7 @@ public class MemberVo {
     private String description;
     private Integer remain;
     private byte valid;
+    private Date activeDate;
 
     public MemberVo(MemberEntity memberEntity) {
         BeanUtils.copyProperties(memberEntity,this,"deletedAt","password","authorityEntities",

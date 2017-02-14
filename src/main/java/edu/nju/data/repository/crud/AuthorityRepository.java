@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 /**
- * Authority repository
+ * AuthorityConstant repository
  */
 public interface AuthorityRepository extends CrudRepository<AuthorityEntity,Integer>{
 

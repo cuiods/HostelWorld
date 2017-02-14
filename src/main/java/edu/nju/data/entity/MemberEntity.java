@@ -3,6 +3,7 @@ package edu.nju.data.entity;
 import edu.nju.util.enums.MemberState;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.util.List;
 
 /**
@@ -20,6 +21,7 @@ public class MemberEntity extends UserEntity{
     private Integer remain;
     private List<CheckRecordEntity> checkEntities;
     private List<ReserveEntity> reserveEntities;
+    private Date activeDate;
 
     @Id
     @Column(name = "id")
@@ -130,4 +132,13 @@ public class MemberEntity extends UserEntity{
         return result;
     }
 
+    @Basic
+    @Column(name = "active_date")
+    public Date getActiveDate() {
+        return activeDate;
+    }
+
+    public void setActiveDate(Date activeDate) {
+        this.activeDate = activeDate;
+    }
 }

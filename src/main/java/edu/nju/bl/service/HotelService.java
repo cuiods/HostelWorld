@@ -1,8 +1,6 @@
 package edu.nju.bl.service;
 
-import edu.nju.bl.vo.CheckVo;
-import edu.nju.bl.vo.HotelVo;
-import edu.nju.bl.vo.ReserveVo;
+import edu.nju.bl.vo.*;
 import edu.nju.util.enums.Gender;
 import edu.nju.util.enums.HotelStar;
 import org.springframework.data.domain.Page;
@@ -59,8 +57,8 @@ public interface HotelService {
      * @param picture hotel picture
      * @return {@link HotelVo}
      */
-    HotelVo editHotel(int userId, String fullName, String location, double x, double y,
-                      String description, String summary, HotelStar hotelStar, String picture);
+    HotelTempVo editHotel(int userId, String fullName, String location, double x, double y,
+                          String description, String summary, HotelStar hotelStar, String picture);
 
     /**
      * Get reservations of a member
@@ -75,5 +73,12 @@ public interface HotelService {
      * @return list of {@link CheckVo}
      */
     List<CheckVo> getHotelCheck(int hotelId);
+
+    /**
+     * Get available rooms of a hotel
+     * @param hotelId hotel id
+     * @return available rooms
+     */
+    List<RoomVo> getAvailableRooms(int hotelId);
 
 }

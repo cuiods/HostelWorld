@@ -7,6 +7,7 @@ import edu.nju.data.dao.CheckDao;
 import edu.nju.data.dao.HotelDao;
 import edu.nju.data.dao.HotelTempDao;
 import edu.nju.data.entity.*;
+import edu.nju.util.constant.MessageConstant;
 import edu.nju.util.enums.CheckState;
 import edu.nju.util.enums.HotelState;
 import org.springframework.beans.BeanUtils;
@@ -42,10 +43,10 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     public ResultVo<Boolean> approveHotelCreate(int hotelId) {
         HotelEntity hotelEntity = hotelDao.findById(hotelId);
-        if (hotelEntity == null) return new ResultVo<>(false,"Cannot find hotel",null);
+        if (hotelEntity == null) return new ResultVo<>(false, MessageConstant.HOTEL_NOT_FOUND,null);
         hotelEntity.setState(HotelState.normal);
         hotelDao.save(hotelEntity);
-        return new ResultVo<>(true,"success",true);
+        return new ResultVo<>(true,MessageConstant.SUCCESS,true);
     }
 
     /**
@@ -56,13 +57,14 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     public ResultVo<Boolean> approveHotelEdit(int hotelId) {
         HotelTempEntity hotelTempEntity = hotelTempDao.findById(hotelId);
-        if (hotelTempEntity == null) return new ResultVo<>(false,"No edit record",null);
+        if (hotelTempEntity == null) return new ResultVo<>(false,MessageConstant.EDIT_NOT_FOUND,null);
         hotelTempEntity.setState(HotelState.normal);
         HotelEntity hotelEntity = hotelDao.findById(hotelId);
-        if (hotelEntity == null) return new ResultVo<>(false,"Cannot find hotel",null);
+        if (hotelEntity == null) return new ResultVo<>(false,MessageConstant.HOTEL_NOT_FOUND,null);
         BeanUtils.copyProperties(hotelTempEntity,hotelEntity);
         hotelDao.save(hotelEntity);
-        return new ResultVo<>(true,"success",true);
+        hotelTempDao.save(hotelTempEntity);
+        return new ResultVo<>(true,MessageConstant.SUCCESS,true);
     }
 
     /**
@@ -75,7 +77,7 @@ public class ManagerServiceImpl implements ManagerService {
     public ResultVo<Boolean> completeCheckOutRecord(int checkId) {
         CheckRecordEntity checkRecordEntity = checkDao.findById(checkId);
         if (checkRecordEntity == null)
-            return new ResultVo<>(false,"Cannot find check record.",null);
+            return new ResultVo<>(false,MessageConstant.CHECK_NOT_FOUND,null);
         RoomEntity roomEntity = checkRecordEntity.getRoomEntity();
         HotelEntity hotelEntity = roomEntity.getHotelEntity();
         AccountEntity defaultAccount = hotelEntity.getAccountEntities().get(0);
@@ -83,6 +85,6 @@ public class ManagerServiceImpl implements ManagerService {
         accountDao.save(defaultAccount);
         checkRecordEntity.setState(CheckState.complete);
         checkDao.save(checkRecordEntity);
-        return new ResultVo<>(true,"Success",true);
+        return new ResultVo<>(true,MessageConstant.SUCCESS,true);
     }
 }

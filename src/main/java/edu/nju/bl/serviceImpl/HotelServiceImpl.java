@@ -2,10 +2,7 @@ package edu.nju.bl.serviceImpl;
 
 import edu.nju.bl.service.HotelService;
 import edu.nju.bl.service.RoomService;
-import edu.nju.bl.vo.CheckVo;
-import edu.nju.bl.vo.HotelVo;
-import edu.nju.bl.vo.ReserveVo;
-import edu.nju.bl.vo.RoomVo;
+import edu.nju.bl.vo.*;
 import edu.nju.data.dao.HotelDao;
 import edu.nju.data.dao.HotelTempDao;
 import edu.nju.data.entity.HotelEntity;
@@ -22,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,7 +63,9 @@ public class HotelServiceImpl implements HotelService {
     @Transactional
     public HotelVo getHotelDetail(int hotelId) {
         HotelEntity hotelEntity = hotelDao.findById(hotelId);
+        Date today = new Date(System.currentTimeMillis());
         List<RoomVo> roomVos = hotelEntity.getRoomEntities().stream()
+                .filter(roomEntity -> roomEntity.getStart().before(today) && roomEntity.getEnd().after(today))
                 .map(roomEntity -> new RoomVo(roomEntity,
                         roomService.getRoomNum(roomEntity.getId(),roomEntity.getStart(),roomEntity.getEnd())))
                 .collect(Collectors.toList());
@@ -123,12 +123,12 @@ public class HotelServiceImpl implements HotelService {
      * @return {@link HotelVo}
      */
     @Override
-    public HotelVo editHotel(int userId, String fullName, String location, double x, double y,
-                             String description, String summary, HotelStar hotelStar, String picture) {
+    public HotelTempVo editHotel(int userId, String fullName, String location, double x, double y,
+                                 String description, String summary, HotelStar hotelStar, String picture) {
         HotelEntity hotelEntity = hotelDao.findById(userId);
         if (hotelEntity == null) return null;
         HotelTempEntity hotelTempEntity = new HotelTempEntity();
-        BeanUtils.copyProperties(hotelEntity,hotelTempEntity);
+        hotelTempEntity.setId(hotelEntity.getId());
         hotelTempEntity.setFullname(fullName);
         hotelTempEntity.setLocation(location);
         hotelTempEntity.setLocationX(x);
@@ -138,7 +138,7 @@ public class HotelServiceImpl implements HotelService {
         hotelTempEntity.setStar(hotelStar);
         hotelTempEntity.setPicture(picture);
         hotelTempEntity.setState(HotelState.edit);
-        return new HotelVo(hotelTempDao.save(hotelTempEntity));
+        return new HotelTempVo(hotelTempDao.save(hotelTempEntity));
     }
 
     /**
@@ -172,6 +172,23 @@ public class HotelServiceImpl implements HotelService {
         return hotelEntity.getRoomEntities().stream()
                 .flatMap(roomEntity -> roomEntity.getCheckEntities().stream())
                 .map(CheckVo::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get available rooms of a hotel
+     *
+     * @param hotelId hotel id
+     * @return available rooms
+     */
+    @Override
+    public List<RoomVo> getAvailableRooms(int hotelId) {
+        HotelEntity hotelEntity = hotelDao.findById(hotelId);
+        Date today = new Date(System.currentTimeMillis());
+        return hotelEntity.getRoomEntities().stream()
+                .filter(roomEntity -> roomEntity.getStart().before(today) && roomEntity.getEnd().after(today))
+                .map(roomEntity -> new RoomVo(roomEntity,
+                        roomService.getRoomNum(roomEntity.getId(),roomEntity.getStart(),roomEntity.getEnd())))
                 .collect(Collectors.toList());
     }
 }

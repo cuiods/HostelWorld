@@ -50,6 +50,9 @@ public class RoomServiceImpl implements RoomService {
     @Resource
     private AuthService authService;
 
+    @Resource
+    private MemberService memberService;
+
     /**
      * room reservation service
      *
@@ -68,15 +71,13 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public ResultVo<ReserveVo> reserve(int roomId, int memberId, Date start, Date end,
                                        String nameOne, String nameTwo, String contact, String email, String extra) {
-        RoomEntity roomEntity = roomDao.findById(roomId);
-        MemberEntity memberEntity = memberDao.findById(memberId);
-        if (memberEntity.getRemain()<roomEntity.getPrice().intValue())
-            return new ResultVo<>(false,MessageConstant.REMAIN_NOT_ENOUGH,null);
-        if (!authService.isSelf(memberId))
-            return new ResultVo<>(false,MessageConstant.MEMBER_CONFLICT,null);
         if (getRoomNum(roomId, start, end)<=0)
             return new ResultVo<>(false, MessageConstant.ROOM_NOT_ENOUGH,null);
-        memberEntity.setRemain(memberEntity.getRemain()-roomEntity.getPrice().intValue());
+        RoomEntity roomEntity = roomDao.findById(roomId);
+        MemberEntity memberEntity = memberDao.findById(memberId);
+        ResultVo<MemberVo> memberVoResultVo = memberService.memberPay(memberId,roomEntity.getPrice().intValue());
+        if (!memberVoResultVo.isSuccess())
+            return new ResultVo<>(false,memberVoResultVo.getMessage(),null);
         ReserveEntity reserveEntity = new ReserveEntity();
         reserveEntity.setRoomEntity(roomEntity);
         reserveEntity.setMemberEntity(memberEntity);
@@ -248,6 +249,18 @@ public class RoomServiceImpl implements RoomService {
         roomEntity.setStart(start);
         roomEntity.setEnd(end);
         return new RoomVo(roomDao.save(roomEntity));
+    }
+
+    /**
+     * Get unfinished checks
+     *
+     * @param roomId room id
+     * @return list of {@link CheckVo}
+     */
+    @Override
+    public List<CheckVo> getUnfinishedChecks(int roomId) {
+        return checkDao.findByRoomIdAndState(roomId,CheckState.checkIn).stream()
+                .map(CheckVo::new).collect(Collectors.toList());
     }
 
 }

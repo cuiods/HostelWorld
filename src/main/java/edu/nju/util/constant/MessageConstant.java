@@ -10,6 +10,8 @@ public class MessageConstant {
 
     public static final String MEMBER_NOT_FOUND = "Cannot find member.";
     public static final String CHECK_NOT_FOUND = "Cannot find check record.";
+    public static final String HOTEL_NOT_FOUND = "Cannot find hotel";
+    public static final String EDIT_NOT_FOUND = "Cannot find edit record";
 
     public static final String ACCOUNT_CONFLICT = "Not member account.";
     public static final String MEMBER_CONFLICT = "Member id must correspond to current user id.";

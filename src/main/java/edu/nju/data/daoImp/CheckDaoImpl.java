@@ -3,9 +3,11 @@ package edu.nju.data.daoImp;
 import edu.nju.data.dao.CheckDao;
 import edu.nju.data.entity.CheckRecordEntity;
 import edu.nju.data.repository.crud.CheckRepository;
+import edu.nju.util.enums.CheckState;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Check entity dao impl
@@ -37,5 +39,10 @@ public class CheckDaoImpl implements CheckDao {
     @Override
     public CheckRecordEntity save(CheckRecordEntity checkRecordEntity) {
         return checkRepository.save(checkRecordEntity);
+    }
+
+    @Override
+    public List<CheckRecordEntity> findByRoomIdAndState(int roomId, CheckState state) {
+        return checkRepository.findByRoomEntity_IdAndState(roomId, state);
     }
 }

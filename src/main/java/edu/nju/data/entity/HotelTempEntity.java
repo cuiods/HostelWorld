@@ -11,8 +11,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "hotel_temp")
-@PrimaryKeyJoinColumn(name = "id")
-public class HotelTempEntity extends UserEntity{
+public class HotelTempEntity{
     private int id;
     private String fullname;
     private HotelState state;

@@ -183,6 +183,7 @@ public class MemberServiceImpl implements MemberService {
         }
         memberEntity.setRemain(remain);
         memberEntity.setScore(memberEntity.getScore()+payNum);
+        memberEntity.setLevel(memberEntity.getLevel()+payNum);
         return new ResultVo<>(true,MessageConstant.SUCCESS,new MemberVo(memberDao.save(memberEntity)));
     }
 

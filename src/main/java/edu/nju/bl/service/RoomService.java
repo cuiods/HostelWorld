@@ -76,5 +76,12 @@ public interface RoomService {
     RoomVo createRoom(int hotelId, String roomType, int size, int people, BedType bedType, String description,
                       int number, BigDecimal price, Date start, Date end);
 
+    /**
+     * Get unfinished checks
+     * @param roomId room id
+     * @return list of {@link CheckVo}
+     */
+    List<CheckVo> getUnfinishedChecks(int roomId);
+
 
 }

@@ -1,6 +1,9 @@
 package edu.nju.data.dao;
 
 import edu.nju.data.entity.CheckRecordEntity;
+import edu.nju.util.enums.CheckState;
+
+import java.util.List;
 
 /**
  * Check entity dao
@@ -20,5 +23,7 @@ public interface CheckDao {
      * @return saved {@link CheckRecordEntity}
      */
     CheckRecordEntity save(CheckRecordEntity checkRecordEntity);
+
+    List<CheckRecordEntity> findByRoomIdAndState(int roomId, CheckState state);
 
 }

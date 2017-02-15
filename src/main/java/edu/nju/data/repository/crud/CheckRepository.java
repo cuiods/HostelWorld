@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface CheckRepository extends CrudRepository<CheckRecordEntity,Integer>{
 
-    List<CheckRecordEntity> findByState(CheckState checkState);
+    List<CheckRecordEntity> findByRoomEntity_IdAndState(int roomEntity_Id, CheckState state);
 
     List<CheckRecordEntity> findByCreatedAtLessThan(Timestamp createdAt);
 }

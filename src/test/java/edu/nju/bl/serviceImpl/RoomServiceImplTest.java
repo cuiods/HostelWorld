@@ -34,8 +34,7 @@ public class RoomServiceImplTest extends BaseTest {
         calendar.set(2017,1,15);
         Date end = new Date(calendar.getTimeInMillis());
         System.out.println(roomService.reserve(1,20,start,
-                end,"member","","110",
-                "c@163.com",""));
+                end,"member","110",""));
     }
 
     @Test

@@ -125,8 +125,10 @@ public class MemberServiceImpl implements MemberService {
     public ResultVo<MemberVo> stopMember(int memberId) {
         MemberEntity memberEntity = memberDao.findById(memberId);
         if (memberEntity==null) return new ResultVo<>(false,MessageConstant.MEMBER_NOT_FOUND,null);
-        if (!authService.isSelf(memberId)) return new ResultVo<>(false,MessageConstant.MEMBER_CONFLICT,null);
         memberEntity.setState(MemberState.stop);
+        List<AuthorityEntity> authorityEntities = new ArrayList<>();
+        authorityEntities.add(authorityDao.findByName(AuthorityConstant.USER_BASE));
+        memberEntity.setAuthorityEntities(authorityEntities);
         return new ResultVo<>(true,MessageConstant.SUCCESS,new MemberVo(memberDao.save(memberEntity)));
     }
 
@@ -139,9 +141,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public ResultVo<MemberVo> pauseMember(int memberId) {
         MemberEntity memberEntity = memberDao.findById(memberId);
-        if (memberEntity==null) return new ResultVo<>(false,MessageConstant.MEMBER_NOT_FOUND,null);
-        if (!authService.isSelf(memberId)) return new ResultVo<>(false,MessageConstant.MEMBER_CONFLICT,null);
         memberEntity.setState(MemberState.pause);
+        memberEntity.setAuthorityEntities(authorityDao.findMemberPause());
         return new ResultVo<>(true,MessageConstant.SUCCESS,new MemberVo(memberDao.save(memberEntity)));
     }
 
@@ -233,23 +234,13 @@ public class MemberServiceImpl implements MemberService {
                 .filter(memberEntity -> memberEntity.getActiveDate().before(oneYearBefore)
                         && memberEntity.getState() == MemberState.active && memberEntity.getRemain()< MemberConstant.ACTIVE_REMAIN)
                 .collect(Collectors.toList())
-                .forEach(memberEntity -> {
-                    memberEntity.setState(MemberState.pause);
-                    memberEntity.setAuthorityEntities(authorityDao.findMemberPause());
-                    memberDao.save(memberEntity);
-                });
+                .forEach(memberEntity -> pauseMember(memberEntity.getId()));
         memberEntities.stream()
                 .filter(memberEntity -> memberEntity.getActiveDate()!=null)
                 .filter(memberEntity -> memberEntity.getActiveDate().before(twoYearBefore)
                         && memberEntity.getState() == MemberState.pause)
                 .collect(Collectors.toList())
-                .forEach(memberEntity -> {
-                    memberEntity.setState(MemberState.stop);
-                    List<AuthorityEntity> authorityEntities = new ArrayList<>();
-                    authorityEntities.add(authorityDao.findByName(AuthorityConstant.USER_BASE));
-                    memberEntity.setAuthorityEntities(authorityEntities);
-                    memberDao.save(memberEntity);
-                });
+                .forEach(memberEntity -> stopMember(memberEntity.getId()));
     }
 
 }

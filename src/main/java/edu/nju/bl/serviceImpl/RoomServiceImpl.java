@@ -61,16 +61,14 @@ public class RoomServiceImpl implements RoomService {
      * @param start start date
      * @param end end date
      * @param nameOne name one of person
-     * @param nameTwo name two of person
      * @param contact contact info
-     * @param email email of person
      * @param extra extra info
      * @return {@link ResultVo < ReserveVo >}
      */
     @Override
     @Transactional
     public ResultVo<ReserveVo> reserve(int roomId, int memberId, Date start, Date end,
-                                       String nameOne, String nameTwo, String contact, String email, String extra) {
+                                       String nameOne, String contact, String extra) {
         if (getRoomNum(roomId, start, end)<=0)
             return new ResultVo<>(false, MessageConstant.ROOM_NOT_ENOUGH,null);
         RoomEntity roomEntity = roomDao.findById(roomId);
@@ -83,10 +81,8 @@ public class RoomServiceImpl implements RoomService {
         reserveEntity.setMemberEntity(memberEntity);
         reserveEntity.setStart(start);
         reserveEntity.setEnd(end);
-        reserveEntity.setNameOne(nameOne);
-        reserveEntity.setNameTwo(nameTwo);
+        reserveEntity.setName(nameOne);
         reserveEntity.setContact(contact);
-        reserveEntity.setEmail(email);
         reserveEntity.setExtra(extra);
         reserveEntity.setState(ReserveState.reserve);
         return new ResultVo<>(true,MessageConstant.SUCCESS,new ReserveVo(reserveDao.save(reserveEntity)));

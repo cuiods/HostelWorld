@@ -17,10 +17,8 @@ public class ReserveEntity {
     private int id;
     private Date start;
     private Date end;
-    private String nameOne;
-    private String nameTwo;
+    private String name;
     private String contact;
-    private String email;
     private ReserveState state;
     private String extra;
     private Timestamp createdAt;
@@ -81,23 +79,13 @@ public class ReserveEntity {
     }
 
     @Basic
-    @Column(name = "name_one")
-    public String getNameOne() {
-        return nameOne;
+    @Column(name = "name")
+    public String getName() {
+        return name;
     }
 
-    public void setNameOne(String nameOne) {
-        this.nameOne = nameOne;
-    }
-
-    @Basic
-    @Column(name = "name_two")
-    public String getNameTwo() {
-        return nameTwo;
-    }
-
-    public void setNameTwo(String nameTwo) {
-        this.nameTwo = nameTwo;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Basic
@@ -108,16 +96,6 @@ public class ReserveEntity {
 
     public void setContact(String contact) {
         this.contact = contact;
-    }
-
-    @Basic
-    @Column(name = "email")
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     @Basic
@@ -181,10 +159,8 @@ public class ReserveEntity {
         if (id != that.id) return false;
         if (start != null ? !start.equals(that.start) : that.start != null) return false;
         if (end != null ? !end.equals(that.end) : that.end != null) return false;
-        if (nameOne != null ? !nameOne.equals(that.nameOne) : that.nameOne != null) return false;
-        if (nameTwo != null ? !nameTwo.equals(that.nameTwo) : that.nameTwo != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (contact != null ? !contact.equals(that.contact) : that.contact != null) return false;
-        if (email != null ? !email.equals(that.email) : that.email != null) return false;
         if (state != null ? !state.equals(that.state) : that.state != null) return false;
         if (extra != null ? !extra.equals(that.extra) : that.extra != null) return false;
         if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
@@ -198,10 +174,8 @@ public class ReserveEntity {
         int result = id;
         result = 31 * result + (start != null ? start.hashCode() : 0);
         result = 31 * result + (end != null ? end.hashCode() : 0);
-        result = 31 * result + (nameOne != null ? nameOne.hashCode() : 0);
-        result = 31 * result + (nameTwo != null ? nameTwo.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (contact != null ? contact.hashCode() : 0);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (state != null ? state.hashCode() : 0);
         result = 31 * result + (extra != null ? extra.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);

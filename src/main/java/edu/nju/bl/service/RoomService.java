@@ -21,8 +21,8 @@ public interface RoomService {
      * room reservation service
      * @return {@link ResultVo<ReserveVo>}
      */
-    ResultVo<ReserveVo> reserve(int roomId, int memberId, Date start, Date end, String nameOne, String nameTwo,
-                                String contact, String email, String extra);
+    ResultVo<ReserveVo> reserve(int roomId, int memberId, Date start, Date end, String nameOne,
+                                String contact, String extra);
 
     /**
      * Cancel reserve

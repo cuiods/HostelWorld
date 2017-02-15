@@ -6,6 +6,7 @@ import edu.nju.util.enums.PayWay;
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * Check entity
@@ -15,8 +16,6 @@ import java.sql.Timestamp;
 public class CheckRecordEntity {
     private int id;
     private CheckState state;
-    private String nameOne;
-    private String nameTwo;
     private PayWay payway;
     private Timestamp createdAt;
     private Timestamp updateAt;
@@ -24,6 +23,7 @@ public class CheckRecordEntity {
     private Date end;
     private RoomEntity roomEntity;
     private MemberEntity memberEntity;
+    private List<TenantEntity> tenantEntities;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,6 +56,18 @@ public class CheckRecordEntity {
         this.memberEntity = memberEntity;
     }
 
+    @ManyToMany
+    @JoinTable(name = "check_tenant", schema = "hostel",
+            joinColumns = @JoinColumn(name = "check_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "tenant_id", referencedColumnName = "id"))
+    public List<TenantEntity> getTenantEntities() {
+        return tenantEntities;
+    }
+
+    public void setTenantEntities(List<TenantEntity> tenantEntities) {
+        this.tenantEntities = tenantEntities;
+    }
+
     @Basic
     @Enumerated(EnumType.STRING)
     @Column(name = "state")
@@ -65,26 +77,6 @@ public class CheckRecordEntity {
 
     public void setState(CheckState state) {
         this.state = state;
-    }
-
-    @Basic
-    @Column(name = "nameOne")
-    public String getNameOne() {
-        return nameOne;
-    }
-
-    public void setNameOne(String nameOne) {
-        this.nameOne = nameOne;
-    }
-
-    @Basic
-    @Column(name = "nameTwo")
-    public String getNameTwo() {
-        return nameTwo;
-    }
-
-    public void setNameTwo(String nameTwo) {
-        this.nameTwo = nameTwo;
     }
 
     @Basic
@@ -147,8 +139,6 @@ public class CheckRecordEntity {
 
         if (id != that.id) return false;
         if (state != null ? !state.equals(that.state) : that.state != null) return false;
-        if (nameOne != null ? !nameOne.equals(that.nameOne) : that.nameOne != null) return false;
-        if (nameTwo != null ? !nameTwo.equals(that.nameTwo) : that.nameTwo != null) return false;
         if (payway != null ? !payway.equals(that.payway) : that.payway != null) return false;
         if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
         if (updateAt != null ? !updateAt.equals(that.updateAt) : that.updateAt != null) return false;
@@ -162,8 +152,6 @@ public class CheckRecordEntity {
     public int hashCode() {
         int result = id;
         result = 31 * result + (state != null ? state.hashCode() : 0);
-        result = 31 * result + (nameOne != null ? nameOne.hashCode() : 0);
-        result = 31 * result + (nameTwo != null ? nameTwo.hashCode() : 0);
         result = 31 * result + (payway != null ? payway.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (updateAt != null ? updateAt.hashCode() : 0);

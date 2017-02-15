@@ -1,14 +1,14 @@
 package edu.nju.bl.serviceImpl;
 
+import edu.nju.bl.service.AuthService;
 import edu.nju.bl.service.MemberService;
 import edu.nju.bl.service.RoomService;
 import edu.nju.bl.vo.*;
 import edu.nju.data.dao.*;
 import edu.nju.data.entity.*;
+import edu.nju.util.constant.MemberConstant;
 import edu.nju.util.constant.MessageConstant;
-import edu.nju.util.enums.BedType;
-import edu.nju.util.enums.CheckState;
-import edu.nju.util.enums.PayWay;
+import edu.nju.util.enums.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +42,13 @@ public class RoomServiceImpl implements RoomService {
     private CheckDao checkDao;
 
     @Resource
-    private MemberService memberService;
+    private TenantDao tenantDao;
+
+    @Resource
+    private AuthorityDao authorityDao;
+
+    @Resource
+    private AuthService authService;
 
     /**
      * room reservation service
@@ -62,13 +68,14 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public ResultVo<ReserveVo> reserve(int roomId, int memberId, Date start, Date end,
                                        String nameOne, String nameTwo, String contact, String email, String extra) {
-        if (getRoomNum(roomId, start, end)<=0) {
-            return new ResultVo<>(false, MessageConstant.ROOM_NOT_ENOUGH,null);
-        }
         RoomEntity roomEntity = roomDao.findById(roomId);
         MemberEntity memberEntity = memberDao.findById(memberId);
         if (memberEntity.getRemain()<roomEntity.getPrice().intValue())
             return new ResultVo<>(false,MessageConstant.REMAIN_NOT_ENOUGH,null);
+        if (!authService.isSelf(memberId))
+            return new ResultVo<>(false,MessageConstant.MEMBER_CONFLICT,null);
+        if (getRoomNum(roomId, start, end)<=0)
+            return new ResultVo<>(false, MessageConstant.ROOM_NOT_ENOUGH,null);
         memberEntity.setRemain(memberEntity.getRemain()-roomEntity.getPrice().intValue());
         ReserveEntity reserveEntity = new ReserveEntity();
         reserveEntity.setRoomEntity(roomEntity);
@@ -80,6 +87,7 @@ public class RoomServiceImpl implements RoomService {
         reserveEntity.setContact(contact);
         reserveEntity.setEmail(email);
         reserveEntity.setExtra(extra);
+        reserveEntity.setState(ReserveState.reserve);
         return new ResultVo<>(true,MessageConstant.SUCCESS,new ReserveVo(reserveDao.save(reserveEntity)));
     }
 
@@ -90,63 +98,78 @@ public class RoomServiceImpl implements RoomService {
      * @return {@link ResultVo}
      */
     @Override
+    @Transactional
     public ResultVo<Boolean> cancelReserve(int reserveId) {
+        ReserveEntity reserveEntity = reserveDao.findById(reserveId);
+        MemberEntity memberEntity = reserveEntity.getMemberEntity();
+        if (!authService.isSelf(memberEntity.getId()))
+            return new ResultVo<>(false,MessageConstant.AUTHORITY_FORBIDDEN,null);
+        memberEntity.setRemain(memberEntity.getRemain()+reserveEntity.getRoomEntity().getPrice().intValue());
+        if (memberEntity.getRemain()>= MemberConstant.ACTIVE_REMAIN) {
+            memberEntity.setState(MemberState.active);
+            memberEntity.setAuthorityEntities(authorityDao.findMemberActive());
+        }
+        memberDao.save(memberEntity);
         reserveDao.delete(reserveId);
-        return new ResultVo<>(true,"deleted",true);
+        return new ResultVo<>(true,MessageConstant.SUCCESS,true);
     }
 
     /**
      * room checkin service
      *
      * @param roomId room id
-     * @param memberId member id
      * @param start start date
      * @param end end date
-     * @param nameOne name one of person
-     * @param nameTwo name two of person
+     * @param tenants tenant ids
      * @return {@link ResultVo <CheckVo>}
      */
     @Override
-    public ResultVo<CheckVo> checkIn(int roomId, int memberId, Date start, Date end,
-                                     String nameOne, String nameTwo) {
-        if (getRoomNum(roomId, start, end) <= 0) {
-            return new ResultVo<>(false,"Not enougn room",null);
-        }
+    @Transactional
+    public ResultVo<CheckVo> checkIn(int roomId, int reserveId, Date start, Date end,
+                                     List<Integer> tenants) {
         CheckRecordEntity checkRecordEntity = new CheckRecordEntity();
-        checkRecordEntity.setRoomEntity(roomDao.findById(roomId));
-        checkRecordEntity.setMemberEntity(memberDao.findById(memberId));
+        RoomEntity roomEntity = roomDao.findById(roomId);
+        if (tenants.size()>roomEntity.getPeople())
+            return new ResultVo<>(false,MessageConstant.PEOPLE_MAX,null);
+        checkRecordEntity.setRoomEntity(roomEntity);
         checkRecordEntity.setStart(start);
         checkRecordEntity.setEnd(end);
-        checkRecordEntity.setNameTwo(nameTwo);
-        checkRecordEntity.setNameOne(nameOne);
-        return new ResultVo<>(true,"check in",new CheckVo(checkDao.save(checkRecordEntity)));
+        checkRecordEntity.setState(CheckState.checkIn);
+        checkRecordEntity.setPayway(PayWay.cash);
+        checkRecordEntity.setTenantEntities(tenants.stream()
+                .map(integer -> tenantDao.findById(integer)).collect(Collectors.toList()));
+        ReserveEntity reserveEntity = reserveDao.findById(reserveId);
+        if (reserveEntity!=null) {
+            reserveEntity.setState(ReserveState.checkIn);
+            checkRecordEntity.setMemberEntity(reserveEntity.getMemberEntity());
+            checkRecordEntity.setPayway(PayWay.member);
+            reserveDao.save(reserveEntity);
+            return new ResultVo<>(true,MessageConstant.SUCCESS,new CheckVo(checkDao.save(checkRecordEntity)));
+        }
+        if (getRoomNum(roomId, start, end) <= 0) {
+            return new ResultVo<>(false,MessageConstant.ROOM_NOT_ENOUGH,null);
+        }
+        return new ResultVo<>(true,MessageConstant.SUCCESS,new CheckVo(checkDao.save(checkRecordEntity)));
     }
 
     /**
      * Room check out service
      *
      * @param checkId check id
-     * @param payWay  pay way
      * @return {@link ResultVo < CheckVo >}
      */
     @Override
     @Transactional
-    public ResultVo<CheckVo> checkOut(int checkId, PayWay payWay) {
+    public ResultVo<CheckVo> checkOut(int checkId) {
         CheckRecordEntity checkRecordEntity = checkDao.findById(checkId);
         if (checkRecordEntity == null) {
-            return new ResultVo<>(false,"Cannot find check in record",null);
+            return new ResultVo<>(false,MessageConstant.CHECK_NOT_FOUND,null);
         }
-        checkRecordEntity.setPayway(payWay);
-        if (payWay == PayWay.member) {
-            MemberEntity memberEntity = checkRecordEntity.getMemberEntity();
-            RoomEntity roomEntity = checkRecordEntity.getRoomEntity();
-            ResultVo<MemberVo> memberVoResultVo = memberService.memberPay(memberEntity.getId(),roomEntity.getPrice().intValue());
-            if (!memberVoResultVo.isSuccess()) {
-                return new ResultVo<>(false,memberVoResultVo.getMessage(),null);
-            }
-            checkRecordEntity.setState(CheckState.complete);
+        checkRecordEntity.setState(CheckState.complete);
+        if (checkRecordEntity.getPayway() == PayWay.member) {
+            checkRecordEntity.setState(CheckState.checkOut);
         }
-        return new ResultVo<>(true,"check out",new CheckVo(checkDao.save(checkRecordEntity)));
+        return new ResultVo<>(true,MessageConstant.SUCCESS,new CheckVo(checkDao.save(checkRecordEntity)));
     }
 
     /**
@@ -158,6 +181,7 @@ public class RoomServiceImpl implements RoomService {
      * @return {@link RoomVo} with room number
      */
     @Override
+    @Transactional
     public RoomVo getRoomDetail(int roomId, Date start, Date end) {
         RoomEntity roomEntity = roomDao.findById(roomId);
         return new RoomVo(roomEntity,getRoomNum(roomId, start, end));
@@ -176,20 +200,23 @@ public class RoomServiceImpl implements RoomService {
     public int getRoomNum(int roomId, Date start, Date end) {
         RoomEntity roomEntity = roomDao.findById(roomId);
         if (roomEntity==null) return -1;
+        if (start.before(roomEntity.getStart())||end.after(roomEntity.getEnd())) return -1;
         long reserve = 0;
         if (roomEntity.getReserveEntities() != null) {
             reserve = roomEntity.getReserveEntities().stream()
+                    .filter(reserveEntity -> reserveEntity.getDeletedAt() == null && reserveEntity.getState()==ReserveState.reserve)
                     .filter(reserveEntity -> reserveEntity.getEnd().after(start) && reserveEntity.getStart().before(end))
                     .count();
         }
         long check = 0;
         if (roomEntity.getCheckEntities()!=null) {
             check = roomEntity.getCheckEntities().stream()
+                    .filter(checkRecordEntity -> checkRecordEntity.getState()==CheckState.checkIn)
                     .filter(checkEntity -> checkEntity.getEnd().after(start) && checkEntity.getStart().before(end))
                     .count();
         }
         return roomEntity.getNumber()-Math.toIntExact(reserve)-Math.toIntExact(check);
-    }
+}
 
     /**
      * Create room plan
@@ -223,37 +250,4 @@ public class RoomServiceImpl implements RoomService {
         return new RoomVo(roomDao.save(roomEntity));
     }
 
-    /**
-     * Get reservations of a member
-     *
-     * @param hotelId member id
-     * @return list of {@link ReserveVo}
-     */
-    @Override
-    @Transactional
-    public List<ReserveVo> getHotelReserve(int hotelId) {
-        HotelEntity hotelEntity = hotelDao.findById(hotelId);
-        if (hotelEntity==null) return new ArrayList<>();
-        return hotelEntity.getRoomEntities().stream()
-                .flatMap(roomEntity -> roomEntity.getReserveEntities().stream())
-                .map(ReserveVo::new)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get member check info
-     *
-     * @param hotelId member id
-     * @return list of {@link CheckVo}
-     */
-    @Override
-    @Transactional
-    public List<CheckVo> getHotelCheck(int hotelId) {
-        HotelEntity hotelEntity = hotelDao.findById(hotelId);
-        if (hotelEntity==null) return new ArrayList<>();
-        return hotelEntity.getRoomEntities().stream()
-                .flatMap(roomEntity -> roomEntity.getCheckEntities().stream())
-                .map(CheckVo::new)
-                .collect(Collectors.toList());
-    }
 }

@@ -9,6 +9,8 @@ import org.springframework.beans.BeanUtils;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Check entity vo
@@ -21,12 +23,11 @@ public class CheckVo {
     private CheckState state;
     private Date start;
     private Date end;
-    private String nameOne;
-    private String nameTwo;
     private PayWay payway;
     private Timestamp createdAt;
     private Timestamp updateAt;
     private RoomVo roomVo;
+    private List<TenantVo> tenantVos;
 
     public CheckVo(CheckRecordEntity checkRecordEntity) {
         this(checkRecordEntity,false);
@@ -36,6 +37,7 @@ public class CheckVo {
         BeanUtils.copyProperties(checkRecordEntity,this,"roomEntity","memberEntity");
         if (hasSession) {
             roomVo = new RoomVo(checkRecordEntity.getRoomEntity());
+            tenantVos = checkRecordEntity.getTenantEntities().stream().map(TenantVo::new).collect(Collectors.toList());
         }
     }
 }

@@ -35,15 +35,14 @@ public interface RoomService {
      * room checkin service
      * @return {@link ResultVo<CheckVo>}
      */
-    ResultVo<CheckVo> checkIn(int roomId, int memberId, Date start, Date end, String nameOne, String nameTwo);
+    ResultVo<CheckVo> checkIn(int roomId, int reserveId, Date start, Date end, List<Integer> tenants);
 
     /**
      * Room check out service
      * @param checkId check id
-     * @param payWay pay way
      * @return {@link ResultVo<CheckVo>}
      */
-    ResultVo<CheckVo> checkOut(int checkId, PayWay payWay);
+    ResultVo<CheckVo> checkOut(int checkId);
 
     /**
      * Get room info including left room number
@@ -77,18 +76,5 @@ public interface RoomService {
     RoomVo createRoom(int hotelId, String roomType, int size, int people, BedType bedType, String description,
                       int number, BigDecimal price, Date start, Date end);
 
-    /**
-     * Get reservations of a member
-     * @param hotelId member id
-     * @return list of {@link ReserveVo}
-     */
-    List<ReserveVo> getHotelReserve(int hotelId);
-
-    /**
-     * Get member check info
-     * @param hotelId member id
-     * @return list of {@link CheckVo}
-     */
-    List<CheckVo> getHotelCheck(int hotelId);
 
 }

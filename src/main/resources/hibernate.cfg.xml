@@ -20,5 +20,6 @@
         <mapping class="edu.nju.data.entity.RoomEntity"/>
         <mapping class="edu.nju.data.entity.UserEntity"/>
         <mapping class="edu.nju.data.entity.HotelTempEntity"/>
+        <mapping class="edu.nju.data.entity.TenantEntity"/>
     </session-factory>
 </hibernate-configuration>

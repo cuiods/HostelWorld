@@ -2,7 +2,9 @@ package edu.nju.bl.serviceImpl;
 
 import edu.nju.bl.service.HotelService;
 import edu.nju.bl.service.RoomService;
+import edu.nju.bl.vo.CheckVo;
 import edu.nju.bl.vo.HotelVo;
+import edu.nju.bl.vo.ReserveVo;
 import edu.nju.bl.vo.RoomVo;
 import edu.nju.data.dao.HotelDao;
 import edu.nju.data.dao.HotelTempDao;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -136,5 +139,39 @@ public class HotelServiceImpl implements HotelService {
         hotelTempEntity.setPicture(picture);
         hotelTempEntity.setState(HotelState.edit);
         return new HotelVo(hotelTempDao.save(hotelTempEntity));
+    }
+
+    /**
+     * Get reservations of a member
+     *
+     * @param hotelId member id
+     * @return list of {@link ReserveVo}
+     */
+    @Override
+    @Transactional
+    public List<ReserveVo> getHotelReserve(int hotelId) {
+        HotelEntity hotelEntity = hotelDao.findById(hotelId);
+        if (hotelEntity==null) return new ArrayList<>();
+        return hotelEntity.getRoomEntities().stream()
+                .flatMap(roomEntity -> roomEntity.getReserveEntities().stream())
+                .map(ReserveVo::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get member check info
+     *
+     * @param hotelId member id
+     * @return list of {@link CheckVo}
+     */
+    @Override
+    @Transactional
+    public List<CheckVo> getHotelCheck(int hotelId) {
+        HotelEntity hotelEntity = hotelDao.findById(hotelId);
+        if (hotelEntity==null) return new ArrayList<>();
+        return hotelEntity.getRoomEntities().stream()
+                .flatMap(roomEntity -> roomEntity.getCheckEntities().stream())
+                .map(CheckVo::new)
+                .collect(Collectors.toList());
     }
 }

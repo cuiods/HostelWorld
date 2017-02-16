@@ -16,7 +16,8 @@ spring:
 
 endpoints:
   enabled: false
-
+logging:
+  file: ./HostelWorld.log
 ---
 spring:
   profiles: dev

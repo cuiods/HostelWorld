@@ -61,6 +61,7 @@ public class AuthorityDaoImpl implements AuthorityDao {
     public List<AuthorityEntity> findMemberActive() {
         List<AuthorityEntity> authorityEntities = new ArrayList<>();
         authorityEntities.add(findByName(AuthorityConstant.USER_BASE));
+        authorityEntities.add(findByName(AuthorityConstant.MEMBER_PAUSE));
         authorityEntities.add(findByName(AuthorityConstant.MEMBER_ACTIVE));
         return authorityEntities;
     }
@@ -87,6 +88,7 @@ public class AuthorityDaoImpl implements AuthorityDao {
     public List<AuthorityEntity> findHotelActive() {
         List<AuthorityEntity> authorityEntities = new ArrayList<>();
         authorityEntities.add(findByName(AuthorityConstant.USER_BASE));
+        authorityEntities.add(findByName(AuthorityConstant.HOTEL_PAUSE));
         authorityEntities.add(findByName(AuthorityConstant.HOTEL_ACTIVE));
         return authorityEntities;
     }
@@ -114,7 +116,9 @@ public class AuthorityDaoImpl implements AuthorityDao {
         List<AuthorityEntity> authorityEntities = new ArrayList<>();
         authorityEntities.add(findByName(AuthorityConstant.USER_BASE));
         authorityEntities.add(findByName(AuthorityConstant.MEMBER_ACTIVE));
+        authorityEntities.add(findByName(AuthorityConstant.MEMBER_PAUSE));
         authorityEntities.add(findByName(AuthorityConstant.HOTEL_ACTIVE));
+        authorityEntities.add(findByName(AuthorityConstant.HOTEL_PAUSE));
         authorityEntities.add(findByName(AuthorityConstant.MANAGER));
         return authorityEntities;
     }

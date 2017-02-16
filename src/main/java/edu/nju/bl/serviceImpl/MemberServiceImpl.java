@@ -79,9 +79,7 @@ public class MemberServiceImpl implements MemberService {
         memberEntity.setLevel(0);
         memberEntity.setScore(0);
         memberEntity.setRemain(0);
-        List<AuthorityEntity> authorityEntities = new ArrayList<>();
-        authorityEntities.add(authorityDao.findByName(AuthorityConstant.USER_BASE));
-        memberEntity.setAuthorityEntities(authorityEntities);
+        memberEntity.setAuthorityEntities(authorityDao.findMemberPause());
         return new MemberVo(memberDao.save(memberEntity));
     }
 

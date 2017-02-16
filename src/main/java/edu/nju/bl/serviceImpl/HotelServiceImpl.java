@@ -3,6 +3,7 @@ package edu.nju.bl.serviceImpl;
 import edu.nju.bl.service.HotelService;
 import edu.nju.bl.service.RoomService;
 import edu.nju.bl.vo.*;
+import edu.nju.data.dao.AuthorityDao;
 import edu.nju.data.dao.HotelDao;
 import edu.nju.data.dao.HotelTempDao;
 import edu.nju.data.entity.HotelEntity;
@@ -32,6 +33,9 @@ public class HotelServiceImpl implements HotelService {
 
     @Resource
     private HotelDao hotelDao;
+
+    @Resource
+    private AuthorityDao authorityDao;
 
     @Resource
     private HotelTempDao hotelTempDao;
@@ -105,6 +109,7 @@ public class HotelServiceImpl implements HotelService {
         hotelEntity.setStar(hotelStar);
         hotelEntity.setPicture(picture);
         hotelEntity.setState(HotelState.newly);
+        hotelEntity.setAuthorityEntities(authorityDao.findHotelPause());
         return new HotelVo(hotelDao.save(hotelEntity));
     }
 

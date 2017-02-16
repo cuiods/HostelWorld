@@ -31,6 +31,17 @@ public class CheckDaoImpl implements CheckDao {
     }
 
     /**
+     * find check records by state
+     *
+     * @param checkState checkState
+     * @return list of {@link CheckRecordEntity}
+     */
+    @Override
+    public List<CheckRecordEntity> findByState(CheckState checkState) {
+        return checkRepository.findByState(checkState);
+    }
+
+    /**
      * create or update check entity
      *
      * @param checkRecordEntity check entity to save

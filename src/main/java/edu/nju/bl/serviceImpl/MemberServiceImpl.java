@@ -84,7 +84,9 @@ public class MemberServiceImpl implements MemberService {
         memberEntity.setScore(0);
         memberEntity.setRemain(0);
         memberEntity.setAuthorityEntities(authorityDao.findMemberPause());
-        return new MemberVo(memberDao.save(memberEntity));
+        MemberEntity memberEntitySaved = memberDao.save(memberEntity);
+        accountService.createAccount(memberEntitySaved);
+        return new MemberVo(memberEntitySaved);
     }
 
     /**

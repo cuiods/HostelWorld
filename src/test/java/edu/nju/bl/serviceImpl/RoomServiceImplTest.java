@@ -3,6 +3,7 @@ package edu.nju.bl.serviceImpl;
 import edu.nju.BaseTest;
 import edu.nju.bl.service.RoomService;
 import edu.nju.util.enums.BedType;
+import edu.nju.util.enums.PayWay;
 import org.junit.Test;
 import org.springframework.security.test.context.support.WithMockUser;
 
@@ -56,7 +57,7 @@ public class RoomServiceImplTest extends BaseTest {
 
     @Test
     public void checkOut() throws Exception {
-        System.out.println(roomService.checkOut(4));
+        System.out.println(roomService.checkOut(4,-1, PayWay.cash));
     }
 
     @Test

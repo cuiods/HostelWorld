@@ -1,6 +1,9 @@
 package edu.nju.bl.serviceImpl;
 
 import edu.nju.bl.service.ManagerService;
+import edu.nju.bl.vo.CheckVo;
+import edu.nju.bl.vo.HotelTempVo;
+import edu.nju.bl.vo.HotelVo;
 import edu.nju.bl.vo.ResultVo;
 import edu.nju.data.dao.AccountDao;
 import edu.nju.data.dao.CheckDao;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Manager service impl
@@ -47,6 +52,36 @@ public class ManagerServiceImpl implements ManagerService {
         hotelEntity.setState(HotelState.normal);
         hotelDao.save(hotelEntity);
         return new ResultVo<>(true,MessageConstant.SUCCESS,true);
+    }
+
+    /**
+     * Get hotels to be approved.
+     *
+     * @return list of {@link HotelVo}
+     */
+    @Override
+    public List<HotelVo> getCreatedHotel() {
+        return hotelDao.findByState(HotelState.newly).stream().map(HotelVo::new).collect(Collectors.toList());
+    }
+
+    /**
+     * Get edited hotel
+     *
+     * @return list of {@link HotelTempVo}
+     */
+    @Override
+    public List<HotelTempVo> getEditHotel() {
+        return hotelTempDao.findByState(HotelState.edit).stream().map(HotelTempVo::new).collect(Collectors.toList());
+    }
+
+    /**
+     * Get check record whose hotels have not get the money.
+     *
+     * @return list of {@link CheckVo}
+     */
+    @Override
+    public List<CheckVo> getUnCompletedCheck() {
+        return checkDao.findByState(CheckState.checkOut).stream().map(CheckVo::new).collect(Collectors.toList());
     }
 
     /**
@@ -86,5 +121,17 @@ public class ManagerServiceImpl implements ManagerService {
         checkRecordEntity.setState(CheckState.complete);
         checkDao.save(checkRecordEntity);
         return new ResultVo<>(true,MessageConstant.SUCCESS,true);
+    }
+
+    /**
+     * Set check out record to complete and give hotel money.
+     *
+     * @param checkIds check ids
+     */
+    @Override
+    public ResultVo<Boolean> completeCheckOutRecord(List<Integer> checkIds) {
+        int success = (int) checkIds.stream()
+                .map(this::completeCheckOutRecord).filter(ResultVo::isSuccess).count();
+        return new ResultVo<>(success == checkIds.size(), "Completed "+success+" check record(s).",null);
     }
 }

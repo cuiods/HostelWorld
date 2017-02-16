@@ -1,5 +1,6 @@
 package edu.nju.bl.serviceImpl;
 
+import edu.nju.bl.service.AccountService;
 import edu.nju.bl.service.AuthService;
 import edu.nju.bl.service.HotelService;
 import edu.nju.bl.service.RoomService;
@@ -48,6 +49,9 @@ public class HotelServiceImpl implements HotelService {
 
     @Resource
     private AuthService authService;
+
+    @Resource
+    private AccountService accountService;
 
     @Resource
     private DiscountStrategy discountStrategy;
@@ -121,7 +125,9 @@ public class HotelServiceImpl implements HotelService {
         hotelEntity.setPicture(picture);
         hotelEntity.setState(HotelState.newly);
         hotelEntity.setAuthorityEntities(authorityDao.findHotelPause());
-        return new HotelVo(hotelDao.save(hotelEntity));
+        HotelEntity hotelEntitySaved = hotelDao.save(hotelEntity);
+        accountService.createAccount(hotelEntitySaved);
+        return new HotelVo(hotelEntitySaved);
     }
 
     /**

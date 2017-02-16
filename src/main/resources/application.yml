@@ -30,3 +30,10 @@ spring:
     url: jdbc:mysql://localhost:3306/hostel?useUnicode=true&characterEncoding=UTF-8
 endpoints:
   enabled: true
+---
+OSS:
+  host: http://hostel-world.oss-cn-shanghai.aliyuncs.com
+  accessKeyId: LTAICVi17CxDTwVT
+  accessKeySecret: qvxT2MOKjes09N9pwMWMYlkClwcDwk
+  bucketName: hostel-world
+  endpoint: oss-cn-shanghai.aliyuncs.com

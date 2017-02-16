@@ -15,5 +15,7 @@ public interface CheckRepository extends CrudRepository<CheckRecordEntity,Intege
 
     List<CheckRecordEntity> findByRoomEntity_IdAndState(int roomEntity_Id, CheckState state);
 
+    List<CheckRecordEntity> findByState(CheckState state);
+
     List<CheckRecordEntity> findByCreatedAtLessThan(Timestamp createdAt);
 }

@@ -18,12 +18,25 @@ public interface CheckDao {
     CheckRecordEntity findById(int id);
 
     /**
+     * find check records by state
+     * @param checkState checkState
+     * @return list of {@link CheckRecordEntity}
+     */
+    List<CheckRecordEntity> findByState(CheckState checkState);
+
+    /**
      * create or update check entity
      * @param checkRecordEntity check entity to save
      * @return saved {@link CheckRecordEntity}
      */
     CheckRecordEntity save(CheckRecordEntity checkRecordEntity);
 
+    /**
+     * Find by room and state
+     * @param roomId room id
+     * @param state check state
+     * @return list of {@link CheckRecordEntity}
+     */
     List<CheckRecordEntity> findByRoomIdAndState(int roomId, CheckState state);
 
 }

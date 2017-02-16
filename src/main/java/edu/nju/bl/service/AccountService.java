@@ -2,6 +2,7 @@ package edu.nju.bl.service;
 
 import edu.nju.bl.vo.AccountVo;
 import edu.nju.bl.vo.ResultVo;
+import edu.nju.data.entity.UserEntity;
 
 import java.util.List;
 
@@ -33,5 +34,11 @@ public interface AccountService {
      * @return {@link ResultVo<AccountVo>}
      */
     ResultVo<AccountVo> accountPay(int accountId, int number);
+
+    /**
+     * Create default account for user
+     * @param userEntity user Entity
+     */
+    void createAccount(UserEntity userEntity);
 
 }

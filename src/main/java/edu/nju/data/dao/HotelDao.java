@@ -2,6 +2,7 @@ package edu.nju.data.dao;
 
 import edu.nju.data.entity.HotelEntity;
 import edu.nju.util.enums.HotelStar;
+import edu.nju.util.enums.HotelState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
@@ -16,6 +17,8 @@ public interface HotelDao {
     HotelEntity findById(int id);
 
     HotelEntity findByFullName(String name);
+
+    List<HotelEntity> findByState(HotelState state);
 
     List<HotelEntity> findByKeyword(String keyword);
 

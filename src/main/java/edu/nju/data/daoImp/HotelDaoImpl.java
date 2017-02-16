@@ -5,6 +5,7 @@ import edu.nju.data.entity.HotelEntity;
 import edu.nju.data.repository.crud.HotelRepository;
 import edu.nju.data.repository.page.HotelPageRepository;
 import edu.nju.util.enums.HotelStar;
+import edu.nju.util.enums.HotelState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,11 @@ public class HotelDaoImpl implements HotelDao {
     @Override
     public HotelEntity findByFullName(String name) {
         return hotelRepository.findByFullname(name);
+    }
+
+    @Override
+    public List<HotelEntity> findByState(HotelState state) {
+        return hotelRepository.findByState(state);
     }
 
     @Override

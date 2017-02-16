@@ -49,6 +49,9 @@ public class RoomServiceImpl implements RoomService {
     private AuthorityDao authorityDao;
 
     @Resource
+    private ConsumeDao consumeDao;
+
+    @Resource
     private AuthService authService;
 
     @Resource
@@ -106,8 +109,9 @@ public class RoomServiceImpl implements RoomService {
         MemberEntity memberEntity = reserveEntity.getMemberEntity();
         if (!authService.isSelf(memberEntity.getId()))
             return new ResultVo<>(false,MessageConstant.AUTHORITY_FORBIDDEN,null);
-        memberEntity.setRemain(memberEntity.getRemain()+
-                (int) discountStrategy.getDiscount(memberEntity.getLevel(),reserveEntity.getRoomEntity().getPrice().intValue()));
+        int returnMoney = (int) discountStrategy.getDiscount(memberEntity.getLevel(),reserveEntity.getRoomEntity().getPrice().intValue());
+        memberEntity.setRemain(memberEntity.getRemain()+returnMoney);
+        consumeDao.save(memberEntity,returnMoney,"Return from reservation");
         if (memberEntity.getRemain()>= MemberConstant.ACTIVE_REMAIN) {
             memberEntity.setState(MemberState.active);
             memberEntity.setAuthorityEntities(authorityDao.findMemberActive());

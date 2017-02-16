@@ -86,4 +86,17 @@ public class AccountServiceImpl implements AccountService {
         }
         return resultVo;
     }
+
+    /**
+     * Create default account for user
+     *
+     * @param userEntity user Entity
+     */
+    @Override
+    public void createAccount(UserEntity userEntity) {
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setUserEntity(userEntity);
+        accountEntity.setBalance(5000);
+        accountDao.save(accountEntity);
+    }
 }

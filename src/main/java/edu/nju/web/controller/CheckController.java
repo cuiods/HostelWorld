@@ -8,6 +8,11 @@ import edu.nju.data.dao.TenantDao;
 import edu.nju.data.entity.TenantEntity;
 import edu.nju.web.json.CheckJson;
 import edu.nju.web.json.TenantJson;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
+import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +24,7 @@ import java.sql.Date;
  * REST controller for check module
  * @author cuihao
  */
+@Api(value = "/check", description = "Hotel check in API")
 @RestController
 @RequestMapping("/api/v1/check")
 public class CheckController {
@@ -29,19 +35,27 @@ public class CheckController {
     @Resource
     private TenantDao tenantDao;
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
+    @ApiOperation(value = "Check in",notes = "Hotel check in operation.",
+            response = CheckVo.class,responseContainer = "ResultVo", produces = "application/json;charset=UTF-8")
+    @ApiImplicitParam(name = "checkJson", value = "check in data", required = true, dataType = "CheckJson")
+    @PostMapping(value = "", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<CheckVo> checkIn(@Valid @RequestBody CheckJson checkJson, BindingResult result) {
         if (result.hasErrors()) return new ResultVo<>(false,result.getAllErrors().toString(),null);
         return roomService.checkIn(checkJson.getRoomId(),checkJson.getReserveId(),
                 Date.valueOf(checkJson.getStart()), Date.valueOf(checkJson.getEnd()),checkJson.getTenants());
     }
 
-    @RequestMapping(value = "/{id}/checkOut", method = RequestMethod.POST)
+    @ApiOperation(value = "Check out",notes = "Hotel check out operation.",
+            response = CheckVo.class,responseContainer = "ResultVo", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/{id}/checkOut", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<CheckVo> checkOut(@PathVariable int id) {
         return roomService.checkOut(id);
     }
 
-    @RequestMapping(value = "/tenant", method = RequestMethod.POST)
+    @ApiOperation(value = "Add a tenant",notes = "Before check in, hotel must add at least one tenant.",
+            response = TenantVo.class,responseContainer = "ResultVo", produces = "application/json;charset=UTF-8")
+    @ApiImplicitParam(name = "tenantJson", value = "tenant data", required = true, dataType = "TenantJson")
+    @PostMapping(value = "/tenant", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<TenantVo> addTenant(@Valid @RequestBody TenantJson tenantJson, BindingResult result) {
         if (result.hasErrors()) return new ResultVo<>(false,result.getAllErrors().toString(),null);
         TenantEntity tenantEntity = new TenantEntity();
@@ -51,7 +65,9 @@ public class CheckController {
         return new ResultVo<>(true,null,new TenantVo(tenantDao.save(tenantEntity)));
     }
 
-    @RequestMapping(value = "/tenant/{id}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete a tenant",notes = "Delete directly, cannot undo.",
+            response = ResultVo.class,produces = "application/json;charset=UTF-8")
+    @DeleteMapping(value = "/tenant/{id}", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<Boolean> deleteTenant(@PathVariable int id) {
         tenantDao.delete(id);
         return new ResultVo<>(true,"deleted",true);

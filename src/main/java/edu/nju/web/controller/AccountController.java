@@ -2,10 +2,12 @@ package edu.nju.web.controller;
 
 import edu.nju.bl.service.AccountService;
 import edu.nju.bl.vo.AccountVo;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
  * REST controller of account module
  * @author cuihao
  */
+@Api(value = "/account",description = "User Account API")
 @RestController
 @RequestMapping("/api/v1/account")
 public class AccountController {
@@ -21,12 +24,17 @@ public class AccountController {
     @Resource
     private AccountService accountService;
 
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+    @ApiOperation(value = "Get user accounts",notes = "When creating a user, system will create a bank account.",
+            response = AccountVo.class,responseContainer = "List", produces = "application/json;charset=UTF-8")
+    @GetMapping(value = "{id}",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<AccountVo> accounts(@PathVariable("id") int userId) {
         return accountService.getAccounts(userId);
     }
 
-    @RequestMapping(value = "{id}/available", method = RequestMethod.GET)
+    @ApiOperation(value = "Get available accounts",notes = "Get available accounts which has enough money according to money parameter",
+            response = AccountVo.class,responseContainer = "List", produces = "application/json;charset=UTF-8")
+    @ApiImplicitParam(name = "money", value = "money to pay", required = true, dataType = "Integer")
+    @GetMapping(value = "{id}/available",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<AccountVo> accountAvailable(@PathVariable("id") int userId, int money) {
         return accountService.getAvailableAccounts(userId,money);
     }

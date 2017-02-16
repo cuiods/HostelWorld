@@ -1,13 +1,16 @@
 package edu.nju.bl.serviceImpl;
 
+import edu.nju.bl.service.AuthService;
 import edu.nju.bl.service.HotelService;
 import edu.nju.bl.service.RoomService;
+import edu.nju.bl.strategy.DiscountStrategy;
 import edu.nju.bl.vo.*;
 import edu.nju.data.dao.AuthorityDao;
 import edu.nju.data.dao.HotelDao;
 import edu.nju.data.dao.HotelTempDao;
 import edu.nju.data.entity.HotelEntity;
 import edu.nju.data.entity.HotelTempEntity;
+import edu.nju.data.entity.MemberEntity;
 import edu.nju.util.enums.Gender;
 import edu.nju.util.enums.HotelStar;
 import edu.nju.util.enums.HotelState;
@@ -43,6 +46,12 @@ public class HotelServiceImpl implements HotelService {
     @Resource
     private RoomService roomService;
 
+    @Resource
+    private AuthService authService;
+
+    @Resource
+    private DiscountStrategy discountStrategy;
+
     /**
      * Get list of hotel
      *
@@ -68,10 +77,12 @@ public class HotelServiceImpl implements HotelService {
     public HotelVo getHotelDetail(int hotelId) {
         HotelEntity hotelEntity = hotelDao.findById(hotelId);
         Date today = new Date(System.currentTimeMillis());
+        MemberEntity memberEntity = authService.getCurrentUser();
         List<RoomVo> roomVos = hotelEntity.getRoomEntities().stream()
                 .filter(roomEntity -> roomEntity.getStart().before(today) && roomEntity.getEnd().after(today))
                 .map(roomEntity -> new RoomVo(roomEntity,
-                        roomService.getRoomNum(roomEntity.getId(),roomEntity.getStart(),roomEntity.getEnd())))
+                        roomService.getRoomNum(roomEntity.getId(),roomEntity.getStart(),roomEntity.getEnd()),
+                        memberEntity==null?-1:(int)discountStrategy.getDiscount(memberEntity.getLevel(),roomEntity.getPrice().intValue())))
                 .collect(Collectors.toList());
         return new HotelVo(hotelEntity,roomVos);
     }
@@ -190,10 +201,12 @@ public class HotelServiceImpl implements HotelService {
     public List<RoomVo> getAvailableRooms(int hotelId) {
         HotelEntity hotelEntity = hotelDao.findById(hotelId);
         Date today = new Date(System.currentTimeMillis());
+        MemberEntity memberEntity = authService.getCurrentUser();
         return hotelEntity.getRoomEntities().stream()
                 .filter(roomEntity -> roomEntity.getStart().before(today) && roomEntity.getEnd().after(today))
                 .map(roomEntity -> new RoomVo(roomEntity,
-                        roomService.getRoomNum(roomEntity.getId(),roomEntity.getStart(),roomEntity.getEnd())))
+                        roomService.getRoomNum(roomEntity.getId(),roomEntity.getStart(),roomEntity.getEnd()),
+                        memberEntity==null?-1:(int)discountStrategy.getDiscount(memberEntity.getLevel(),roomEntity.getPrice().intValue())))
                 .collect(Collectors.toList());
     }
 }

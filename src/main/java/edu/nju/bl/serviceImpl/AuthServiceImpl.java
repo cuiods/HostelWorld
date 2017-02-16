@@ -3,7 +3,9 @@ package edu.nju.bl.serviceImpl;
 import edu.nju.bl.service.AuthService;
 import edu.nju.bl.vo.ResultVo;
 import edu.nju.bl.vo.UserVo;
+import edu.nju.data.dao.MemberDao;
 import edu.nju.data.dao.UserDao;
+import edu.nju.data.entity.MemberEntity;
 import edu.nju.data.entity.UserEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,8 @@ public class AuthServiceImpl implements AuthService {
     @Resource
     private UserDao userDao;
 
+    @Resource
+    private MemberDao memberDao;
     /**
      * Find user by username
      *
@@ -95,14 +99,14 @@ public class AuthServiceImpl implements AuthService {
      * @return current user
      */
     @Override
-    public UserEntity getCurrentUser() {
+    public MemberEntity getCurrentUser() {
         UserDetails userDetails = null;
         try {
             userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (userDetails!=null) return memberDao.findByName(userDetails.getUsername());
         } catch (Exception e) {
             return null;
         }
-        if (userDetails!=null) return userDao.findByUserName(userDetails.getUsername());
         return null;
     }
 }

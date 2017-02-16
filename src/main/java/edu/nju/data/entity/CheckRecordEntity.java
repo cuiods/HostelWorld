@@ -12,7 +12,7 @@ import java.util.List;
  * Check entity
  */
 @Entity
-@Table(name = "check_record")
+@Table(name = "check_record", schema = "hostel", catalog = "")
 public class CheckRecordEntity {
     private int id;
     private CheckState state;
@@ -24,6 +24,7 @@ public class CheckRecordEntity {
     private RoomEntity roomEntity;
     private MemberEntity memberEntity;
     private List<TenantEntity> tenantEntities;
+    private Integer pay;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -158,5 +159,15 @@ public class CheckRecordEntity {
         result = 31 * result + (start != null ? start.hashCode() : 0);
         result = 31 * result + (end != null ? end.hashCode() : 0);
         return result;
+    }
+
+    @Basic
+    @Column(name = "pay")
+    public Integer getPay() {
+        return pay;
+    }
+
+    public void setPay(Integer pay) {
+        this.pay = pay;
     }
 }

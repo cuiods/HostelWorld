@@ -1,11 +1,12 @@
 package edu.nju.bl.vo;
 
-import edu.nju.data.entity.HotelEntity;
 import edu.nju.data.entity.RoomEntity;
 import edu.nju.util.enums.BedType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -26,6 +27,7 @@ public class RoomVo {
     private String description;
     private int number;
     private BigDecimal price;
+    private int special = -1;
     private Timestamp createdAt;
     private Timestamp updateAt;
     private Date start;
@@ -37,8 +39,13 @@ public class RoomVo {
     }
 
     public RoomVo(RoomEntity roomEntity, int leftRoom) {
+        this(roomEntity,leftRoom,-1);
+    }
+
+    public RoomVo(RoomEntity roomEntity, int leftRoom, int special) {
         BeanUtils.copyProperties(roomEntity,this,"deletedAt","hotelEntity","pictureEntities",
                 "checkEntities","reserveEntities");
         this.leftRoom = leftRoom;
+        this.special = special;
     }
 }

@@ -21,6 +21,7 @@ public class MemberEntity extends UserEntity{
     private Integer remain;
     private List<CheckRecordEntity> checkEntities;
     private List<ReserveEntity> reserveEntities;
+    private List<ConsumeRecordEntity> consumeRecordEntities;
     private Date activeDate;
 
     @Id
@@ -51,6 +52,16 @@ public class MemberEntity extends UserEntity{
 
     public void setReserveEntities(List<ReserveEntity> reserveEntities) {
         this.reserveEntities = reserveEntities;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "member_id")
+    public List<ConsumeRecordEntity> getConsumeRecordEntities() {
+        return consumeRecordEntities;
+    }
+
+    public void setConsumeRecordEntities(List<ConsumeRecordEntity> consumeRecordEntities) {
+        this.consumeRecordEntities = consumeRecordEntities;
     }
 
     @Basic
@@ -141,4 +152,5 @@ public class MemberEntity extends UserEntity{
     public void setActiveDate(Date activeDate) {
         this.activeDate = activeDate;
     }
+
 }

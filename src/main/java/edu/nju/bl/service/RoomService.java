@@ -42,7 +42,7 @@ public interface RoomService {
      * @param checkId check id
      * @return {@link ResultVo<CheckVo>}
      */
-    ResultVo<CheckVo> checkOut(int checkId);
+    ResultVo<CheckVo> checkOut(int checkId, int memberId, PayWay payWay);
 
     /**
      * Get room info including left room number

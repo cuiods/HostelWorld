@@ -1,9 +1,6 @@
 package edu.nju.bl.service;
 
-import edu.nju.bl.vo.CheckVo;
-import edu.nju.bl.vo.MemberVo;
-import edu.nju.bl.vo.ReserveVo;
-import edu.nju.bl.vo.ResultVo;
+import edu.nju.bl.vo.*;
 import edu.nju.util.enums.Gender;
 
 import java.util.List;
@@ -27,6 +24,12 @@ public interface MemberService {
      */
     MemberVo createMember(String name, String password, String phone, String avatar,
                           Gender gender, String description);
+
+    /**
+     * Edit member
+     * @return {@link MemberVo}
+     */
+    MemberVo editMember(int memberId, String password, String avatar, Gender gender, String description);
 
     /**
      * Activate member authority.
@@ -79,6 +82,13 @@ public interface MemberService {
      * @return list of {@link CheckVo}
      */
     List<CheckVo> getMemberCheck(int memberId);
+
+    /**
+     * Get member consume records
+     * @param memberId member id
+     * @return list of {@link ConsumeVo}
+     */
+    List<ConsumeVo> getConsumeRecords(int memberId);
 
     /**
      * Check member active date

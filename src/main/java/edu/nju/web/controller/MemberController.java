@@ -1,12 +1,10 @@
 package edu.nju.web.controller;
 
 import edu.nju.bl.service.MemberService;
-import edu.nju.bl.vo.CheckVo;
-import edu.nju.bl.vo.MemberVo;
-import edu.nju.bl.vo.ReserveVo;
-import edu.nju.bl.vo.ResultVo;
+import edu.nju.bl.vo.*;
 import edu.nju.util.enums.Gender;
 import edu.nju.web.json.ExchangeJson;
+import edu.nju.web.json.MemberEditJson;
 import edu.nju.web.json.MemberJson;
 import edu.nju.web.json.TransferJson;
 import io.swagger.annotations.Api;
@@ -50,6 +48,17 @@ public class MemberController {
                 Gender.valueOf(memberJson.getGender()),memberJson.getDescription()));
     }
 
+    @ApiOperation(value = "Edit member",notes = "Edit member info.",
+            response = ResultVo.class, produces = "application/json;charset=UTF-8")
+    @ApiImplicitParam(name = "memberEditJson", value = "member edit data", required = true, dataType = "MemberEditJson")
+    @PostMapping(value = "",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultVo<MemberVo> editMember(@Valid @RequestBody MemberEditJson memberEditJson, BindingResult result) {
+        if (result.hasErrors()) return new ResultVo<>(false,result.getAllErrors().toString(),null);
+        return new ResultVo<>(true,null,memberService.editMember(memberEditJson.getMemberId(),
+                memberEditJson.getPassword(),memberEditJson.getAvatar(),Gender.valueOf(memberEditJson.getGender()),
+                memberEditJson.getDescription()));
+    }
+
     @ApiOperation(value = "Recharge member account",notes = "Transfer money from bank account to member account.",
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "transferJson", value = "transfer data", required = true, dataType = "TransferJson")
@@ -88,6 +97,13 @@ public class MemberController {
     @GetMapping(value = "/{id}/check",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<CheckVo> checkVos(@PathVariable int id) {
         return memberService.getMemberCheck(id);
+    }
+
+    @ApiOperation(value = "Get member consume records",notes = "Get member consume records.",
+            response = ConsumeVo.class, responseContainer = "List",produces = "application/json;charset=UTF-8")
+    @GetMapping(value = "/{id}/consume",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<ConsumeVo> consumeVos(@PathVariable int id) {
+        return memberService.getConsumeRecords(id);
     }
 
 }

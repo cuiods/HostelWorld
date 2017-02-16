@@ -6,6 +6,7 @@ import edu.nju.bl.service.MemberService;
 import edu.nju.bl.strategy.ExchangeScoreStrategy;
 import edu.nju.bl.vo.*;
 import edu.nju.data.dao.AuthorityDao;
+import edu.nju.data.dao.ConsumeDao;
 import edu.nju.data.dao.MemberDao;
 import edu.nju.data.entity.AuthorityEntity;
 import edu.nju.data.entity.MemberEntity;
@@ -37,6 +38,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Resource
     private AuthorityDao authorityDao;
+
+    @Resource
+    private ConsumeDao consumeDao;
 
     @Resource
     private AuthService authService;
@@ -84,6 +88,26 @@ public class MemberServiceImpl implements MemberService {
     }
 
     /**
+     * Edit member
+     *
+     * @param memberId member id
+     * @param password password
+     * @param avatar avatar
+     * @param gender gender
+     * @param description description
+     * @return {@link MemberVo}
+     */
+    @Override
+    public MemberVo editMember(int memberId, String password, String avatar, Gender gender, String description) {
+        MemberEntity memberEntity = memberDao.findById(memberId);
+        memberEntity.setPassword(password);
+        memberEntity.setAvatar(avatar);
+        memberEntity.setGender(gender);
+        memberEntity.setDescription(description);
+        return new MemberVo(memberDao.save(memberEntity));
+    }
+
+    /**
      * Activate member authority.
      *
      * @param memberId  member id
@@ -105,6 +129,7 @@ public class MemberServiceImpl implements MemberService {
             return new ResultVo<>(false,accountVoResultVo.getMessage(),null);
         }
         memberEntity.setRemain(memberEntity.getRemain()+money);
+        consumeDao.save(memberEntity,money,"Transfer from Account:"+accountId);
         if (memberEntity.getRemain()>=MemberConstant.ACTIVE_REMAIN) {
             memberEntity.setState(MemberState.active);
             memberEntity.setActiveDate(new Date(System.currentTimeMillis()));
@@ -159,7 +184,8 @@ public class MemberServiceImpl implements MemberService {
         int remainScore = memberEntity.getScore() - score;
         if (remainScore < 0) return new ResultVo<>(false,MessageConstant.SCORE_NOT_ENOUGH,null);
         memberEntity.setScore(remainScore);
-        memberEntity.setRemain(exchangeScoreStrategy.exchange(score)+memberEntity.getScore());
+        memberEntity.setRemain(exchangeScoreStrategy.exchange(score)+memberEntity.getRemain());
+        consumeDao.save(memberEntity,exchangeScoreStrategy.exchange(score),"Exchange from score");
         return new ResultVo<>(true,MessageConstant.SUCCESS,new MemberVo(memberDao.save(memberEntity)));
     }
 
@@ -183,6 +209,7 @@ public class MemberServiceImpl implements MemberService {
         memberEntity.setRemain(remain);
         memberEntity.setScore(memberEntity.getScore()+payNum);
         memberEntity.setLevel(memberEntity.getLevel()+payNum);
+        consumeDao.save(memberEntity,-payNum,"Member card payment");
         return new ResultVo<>(true,MessageConstant.SUCCESS,new MemberVo(memberDao.save(memberEntity)));
     }
 
@@ -214,6 +241,19 @@ public class MemberServiceImpl implements MemberService {
         if (memberEntity == null) return new ArrayList<>();
         return memberEntity.getCheckEntities().stream()
                 .map(CheckVo::new).collect(Collectors.toList());
+    }
+
+    /**
+     * Get member consume records
+     *
+     * @param memberId member id
+     * @return list of {@link ConsumeVo}
+     */
+    @Override
+    @Transactional
+    public List<ConsumeVo> getConsumeRecords(int memberId) {
+        return memberDao.findById(memberId).getConsumeRecordEntities().stream()
+                .map(ConsumeVo::new).collect(Collectors.toList());
     }
 
     /**

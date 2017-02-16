@@ -2,9 +2,7 @@ package edu.nju.bl.service;
 
 import edu.nju.bl.vo.ResultVo;
 import edu.nju.bl.vo.UserVo;
-import edu.nju.data.entity.UserEntity;
-import edu.nju.util.enums.Gender;
-import edu.nju.util.enums.UserType;
+import edu.nju.data.entity.MemberEntity;
 
 /**
  * System auth service
@@ -45,5 +43,5 @@ public interface AuthService {
      * Get current user.
      * @return current user
      */
-    UserEntity getCurrentUser();
+    MemberEntity getCurrentUser();
 }

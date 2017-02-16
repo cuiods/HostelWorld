@@ -6,7 +6,9 @@ import edu.nju.bl.vo.ResultVo;
 import edu.nju.bl.vo.TenantVo;
 import edu.nju.data.dao.TenantDao;
 import edu.nju.data.entity.TenantEntity;
+import edu.nju.util.enums.PayWay;
 import edu.nju.web.json.CheckJson;
+import edu.nju.web.json.CheckOutJson;
 import edu.nju.web.json.TenantJson;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -48,8 +50,8 @@ public class CheckController {
     @ApiOperation(value = "Check out",notes = "Hotel check out operation.",
             response = CheckVo.class,responseContainer = "ResultVo", produces = "application/json;charset=UTF-8")
     @PostMapping(value = "/{id}/checkOut", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<CheckVo> checkOut(@PathVariable int id) {
-        return roomService.checkOut(id);
+    public ResultVo<CheckVo> checkOut(@PathVariable int id, @Valid @RequestBody CheckOutJson checkOutJson) {
+        return roomService.checkOut(id,checkOutJson.getMemberId(), PayWay.valueOf(checkOutJson.getPayway()));
     }
 
     @ApiOperation(value = "Add a tenant",notes = "Before check in, hotel must add at least one tenant.",

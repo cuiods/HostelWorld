@@ -3,6 +3,7 @@ package edu.nju.bl.serviceImpl;
 import edu.nju.bl.service.AuthService;
 import edu.nju.bl.service.MemberService;
 import edu.nju.bl.service.RoomService;
+import edu.nju.bl.strategy.DiscountStrategy;
 import edu.nju.bl.vo.*;
 import edu.nju.data.dao.*;
 import edu.nju.data.entity.*;
@@ -53,6 +54,9 @@ public class RoomServiceImpl implements RoomService {
     @Resource
     private MemberService memberService;
 
+    @Resource
+    private DiscountStrategy discountStrategy;
+
     /**
      * room reservation service
      *
@@ -73,7 +77,8 @@ public class RoomServiceImpl implements RoomService {
             return new ResultVo<>(false, MessageConstant.ROOM_NOT_ENOUGH,null);
         RoomEntity roomEntity = roomDao.findById(roomId);
         MemberEntity memberEntity = memberDao.findById(memberId);
-        ResultVo<MemberVo> memberVoResultVo = memberService.memberPay(memberId,roomEntity.getPrice().intValue());
+        ResultVo<MemberVo> memberVoResultVo = memberService.memberPay(memberId,
+                (int) discountStrategy.getDiscount(memberEntity.getLevel(),roomEntity.getPrice().intValue()));
         if (!memberVoResultVo.isSuccess())
             return new ResultVo<>(false,memberVoResultVo.getMessage(),null);
         ReserveEntity reserveEntity = new ReserveEntity();
@@ -101,7 +106,8 @@ public class RoomServiceImpl implements RoomService {
         MemberEntity memberEntity = reserveEntity.getMemberEntity();
         if (!authService.isSelf(memberEntity.getId()))
             return new ResultVo<>(false,MessageConstant.AUTHORITY_FORBIDDEN,null);
-        memberEntity.setRemain(memberEntity.getRemain()+reserveEntity.getRoomEntity().getPrice().intValue());
+        memberEntity.setRemain(memberEntity.getRemain()+
+                (int) discountStrategy.getDiscount(memberEntity.getLevel(),reserveEntity.getRoomEntity().getPrice().intValue()));
         if (memberEntity.getRemain()>= MemberConstant.ACTIVE_REMAIN) {
             memberEntity.setState(MemberState.active);
             memberEntity.setAuthorityEntities(authorityDao.findMemberActive());
@@ -140,6 +146,7 @@ public class RoomServiceImpl implements RoomService {
             reserveEntity.setState(ReserveState.checkIn);
             checkRecordEntity.setMemberEntity(reserveEntity.getMemberEntity());
             checkRecordEntity.setPayway(PayWay.member);
+            checkRecordEntity.setPay(1);
             reserveDao.save(reserveEntity);
             return new ResultVo<>(true,MessageConstant.SUCCESS,new CheckVo(checkDao.save(checkRecordEntity)));
         }
@@ -157,10 +164,17 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     @Transactional
-    public ResultVo<CheckVo> checkOut(int checkId) {
+    public ResultVo<CheckVo> checkOut(int checkId, int memberId, PayWay payWay) {
         CheckRecordEntity checkRecordEntity = checkDao.findById(checkId);
+        if (payWay!=null) checkRecordEntity.setPayway(payWay);
         if (checkRecordEntity == null) {
             return new ResultVo<>(false,MessageConstant.CHECK_NOT_FOUND,null);
+        }
+        if (memberId > 0 && payWay == PayWay.member && checkRecordEntity.getPay()==0) {
+            ResultVo<MemberVo> resultVo = memberService.memberPay(memberId,checkRecordEntity.getRoomEntity().getPrice().intValue());
+            if (!resultVo.isSuccess())
+                return new ResultVo<>(false,resultVo.getMessage(),null);
+            checkRecordEntity.setPay(1);
         }
         checkRecordEntity.setState(CheckState.complete);
         if (checkRecordEntity.getPayway() == PayWay.member) {
@@ -181,6 +195,10 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public RoomVo getRoomDetail(int roomId, Date start, Date end) {
         RoomEntity roomEntity = roomDao.findById(roomId);
+        MemberEntity memberEntity = authService.getCurrentUser();
+        if (memberEntity!=null)
+            return new RoomVo(roomEntity,getRoomNum(roomId, start, end),
+                    (int) discountStrategy.getDiscount(memberEntity.getLevel(),roomEntity.getPrice().intValue()));
         return new RoomVo(roomEntity,getRoomNum(roomId, start, end));
     }
 

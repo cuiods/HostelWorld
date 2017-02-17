@@ -2,6 +2,8 @@ package edu.nju.web.controller;
 
 import edu.nju.bl.service.MemberService;
 import edu.nju.bl.vo.*;
+import edu.nju.exception.HostelException;
+import edu.nju.util.constant.ErrorCode;
 import edu.nju.util.enums.Gender;
 import edu.nju.web.json.ExchangeJson;
 import edu.nju.web.json.MemberEditJson;
@@ -11,7 +13,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -41,9 +42,8 @@ public class MemberController {
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "memberJson", value = "member data", required = true, dataType = "MemberJson")
     @PostMapping(value = "",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<MemberVo> createMember(@Valid @RequestBody MemberJson memberJson, BindingResult result) {
-        if (result.hasErrors()) return new ResultVo<>(false,result.getAllErrors().toString(),null);
-        return new ResultVo<>(true,null,memberService.createMember(memberJson.getName(),
+    public ResultVo<MemberVo> createMember(@Valid @RequestBody MemberJson memberJson) {
+        return new ResultVo<>(ErrorCode.SUCCESS,null,memberService.createMember(memberJson.getName(),
                 memberJson.getPassword(),memberJson.getPhone(),memberJson.getAvatar(),
                 Gender.valueOf(memberJson.getGender()),memberJson.getDescription()));
     }
@@ -52,9 +52,8 @@ public class MemberController {
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "memberEditJson", value = "member edit data", required = true, dataType = "MemberEditJson")
     @PostMapping(value = "/edit",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<MemberVo> editMember(@Valid @RequestBody MemberEditJson memberEditJson, BindingResult result) {
-        if (result.hasErrors()) return new ResultVo<>(false,result.getAllErrors().toString(),null);
-        return new ResultVo<>(true,null,memberService.editMember(memberEditJson.getMemberId(),
+    public ResultVo<MemberVo> editMember(@Valid @RequestBody MemberEditJson memberEditJson) {
+        return new ResultVo<>(ErrorCode.SUCCESS,null,memberService.editMember(memberEditJson.getMemberId(),
                 memberEditJson.getPassword(),memberEditJson.getAvatar(),Gender.valueOf(memberEditJson.getGender()),
                 memberEditJson.getDescription()));
     }
@@ -63,15 +62,14 @@ public class MemberController {
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "transferJson", value = "transfer data", required = true, dataType = "TransferJson")
     @PostMapping(value = "/recharge", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<MemberVo> recharge(@Valid @RequestParam TransferJson transferJson, BindingResult result) {
-        if (result.hasErrors()) return new ResultVo<>(false,result.getAllErrors().toString(),null);
+    public ResultVo<MemberVo> recharge(@Valid @RequestParam TransferJson transferJson) throws HostelException {
         return memberService.transferToRemain(transferJson.getMemberId(),transferJson.getAccountId(),transferJson.getMoney());
     }
 
     @ApiOperation(value = "Stop member",notes = "Stop member.",
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @PostMapping(value = "/{id}/stop", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<MemberVo> stop(@PathVariable int id) {
+    public ResultVo<MemberVo> stop(@PathVariable int id) throws HostelException {
         return memberService.stopMember(id);
     }
 
@@ -79,9 +77,7 @@ public class MemberController {
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "exchangeJson", value = "exchange number", required = true, dataType = "ExchangeJson")
     @PostMapping(value = "/{id}/exchange", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<MemberVo> exchangeScore(@PathVariable int id, @Valid @RequestBody ExchangeJson exchangeJson,
-                                            BindingResult result) {
-        if (result.hasErrors()) return new ResultVo<>(false,result.getAllErrors().toString(),null);
+    public ResultVo<MemberVo> exchangeScore(@PathVariable int id, @Valid @RequestBody ExchangeJson exchangeJson) throws HostelException {
         return memberService.exchangeScore(id,exchangeJson.getScore());
     }
 

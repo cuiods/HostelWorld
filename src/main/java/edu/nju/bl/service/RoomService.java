@@ -4,6 +4,7 @@ import edu.nju.bl.vo.CheckVo;
 import edu.nju.bl.vo.ReserveVo;
 import edu.nju.bl.vo.ResultVo;
 import edu.nju.bl.vo.RoomVo;
+import edu.nju.exception.HostelException;
 import edu.nju.util.enums.BedType;
 import edu.nju.util.enums.PayWay;
 
@@ -22,27 +23,27 @@ public interface RoomService {
      * @return {@link ResultVo<ReserveVo>}
      */
     ResultVo<ReserveVo> reserve(int roomId, int memberId, Date start, Date end, String nameOne,
-                                String contact, String extra);
+                                String contact, String extra) throws HostelException;
 
     /**
      * Cancel reserve
      * @param reserveId reserve id
      * @return {@link ResultVo}
      */
-    ResultVo<Boolean> cancelReserve(int reserveId);
+    ResultVo<Boolean> cancelReserve(int reserveId) throws HostelException;
 
     /**
      * room checkin service
      * @return {@link ResultVo<CheckVo>}
      */
-    ResultVo<CheckVo> checkIn(int roomId, int reserveId, Date start, Date end, List<Integer> tenants);
+    ResultVo<CheckVo> checkIn(int roomId, int reserveId, Date start, Date end, List<Integer> tenants) throws HostelException;
 
     /**
      * Room check out service
      * @param checkId check id
      * @return {@link ResultVo<CheckVo>}
      */
-    ResultVo<CheckVo> checkOut(int checkId, int memberId, PayWay payWay);
+    ResultVo<CheckVo> checkOut(int checkId, int memberId, PayWay payWay) throws HostelException;
 
     /**
      * Get room info including left room number

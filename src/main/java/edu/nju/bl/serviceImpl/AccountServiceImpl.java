@@ -7,6 +7,9 @@ import edu.nju.data.dao.AccountDao;
 import edu.nju.data.dao.UserDao;
 import edu.nju.data.entity.AccountEntity;
 import edu.nju.data.entity.UserEntity;
+import edu.nju.exception.HostelException;
+import edu.nju.util.constant.ErrorCode;
+import edu.nju.util.constant.MessageConstant;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,21 +72,19 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     @Transactional
-    public ResultVo<AccountVo> accountPay(int accountId, int number) {
+    public ResultVo<AccountVo> accountPay(int accountId, int number) throws HostelException {
         AccountEntity accountEntity = accountDao.findById(accountId);
+        if (accountEntity == null)
+            throw new HostelException(ErrorCode.ACCOUNT_NOT_FOUND, MessageConstant.ACCOUNT_NOT_FOUND);
         ResultVo<AccountVo> resultVo = new ResultVo<>();
-        resultVo.setMessage("Cannot find account.");
-        if (accountEntity!=null) {
-            int balance = accountEntity.getBalance()-number;
-            resultVo.setMessage("Not enough balance.");
-            if (balance>=0) {
-                accountEntity.setBalance(balance);
-                accountDao.save(accountEntity);
-                resultVo.setSuccess(true);
-                resultVo.setMessage("Pay succeed");
-                resultVo.setData(new AccountVo(accountEntity));
-            }
-        }
+        int balance = accountEntity.getBalance()-number;
+        if (balance>=0) {
+            accountEntity.setBalance(balance);
+            accountDao.save(accountEntity);
+            resultVo.setCode(ErrorCode.SUCCESS);
+            resultVo.setMessage(MessageConstant.SUCCESS);
+            resultVo.setData(new AccountVo(accountEntity));
+        } else throw new HostelException(ErrorCode.BALANCE_NOT_ENOUGH, MessageConstant.BALANCE_NOT_ENOUGH);
         return resultVo;
     }
 

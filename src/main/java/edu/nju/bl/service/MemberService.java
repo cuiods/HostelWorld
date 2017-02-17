@@ -1,6 +1,7 @@
 package edu.nju.bl.service;
 
 import edu.nju.bl.vo.*;
+import edu.nju.exception.HostelException;
 import edu.nju.util.enums.Gender;
 
 import java.util.List;
@@ -38,14 +39,14 @@ public interface MemberService {
      * @param money activate money
      * @return {@link ResultVo<MemberVo>}
      */
-    ResultVo<MemberVo> transferToRemain(int memberId, int accountId, int money);
+    ResultVo<MemberVo> transferToRemain(int memberId, int accountId, int money) throws HostelException;
 
     /**
      * Stop member authority
      * @param memberId member id
      * @return {@link ResultVo<MemberVo>}
      */
-    ResultVo<MemberVo> stopMember(int memberId);
+    ResultVo<MemberVo> stopMember(int memberId) throws HostelException;
 
     /**
      * Pause member authority
@@ -59,7 +60,7 @@ public interface MemberService {
      * @param score score to exchange
      * @return {@link ResultVo<MemberVo>}
      */
-    ResultVo<MemberVo> exchangeScore(int memberId, int score);
+    ResultVo<MemberVo> exchangeScore(int memberId, int score) throws HostelException;
 
     /**
      * Use member remain to pay
@@ -67,7 +68,7 @@ public interface MemberService {
      * @param payNum pay number
      * @return {@link ResultVo<MemberVo>}
      */
-    ResultVo<MemberVo> memberPay(int memberId, int payNum);
+    ResultVo<MemberVo> memberPay(int memberId, int payNum) throws HostelException;
 
     /**
      * Get reservations of a member

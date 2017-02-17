@@ -7,6 +7,7 @@ import edu.nju.data.dao.MemberDao;
 import edu.nju.data.dao.UserDao;
 import edu.nju.data.entity.MemberEntity;
 import edu.nju.data.entity.UserEntity;
+import edu.nju.util.constant.ErrorCode;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -72,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
             if (!userEntity.getPassword().equals(password)) {
                 userVoResultVo.setMessage("Error password.");
             } else {
-                userVoResultVo.setSuccess(true);
+                userVoResultVo.setCode(ErrorCode.SUCCESS);
                 userVoResultVo.setMessage("Login succeed.");
                 userVoResultVo.setData(new UserVo(userEntity));
             }

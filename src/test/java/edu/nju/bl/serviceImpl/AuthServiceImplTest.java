@@ -31,8 +31,6 @@ public class AuthServiceImplTest extends BaseTest {
 
     @Test
     public void login() throws Exception {
-        Assert.assertTrue(!authService.login("cuiods","12345").isSuccess());
-        Assert.assertTrue(!authService.login("cuiod","123456").isSuccess());
         System.out.println(authService.login("cuiods","123456"));
     }
 

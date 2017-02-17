@@ -7,6 +7,8 @@ import edu.nju.bl.strategy.DiscountStrategy;
 import edu.nju.bl.vo.*;
 import edu.nju.data.dao.*;
 import edu.nju.data.entity.*;
+import edu.nju.exception.HostelException;
+import edu.nju.util.constant.ErrorCode;
 import edu.nju.util.constant.MemberConstant;
 import edu.nju.util.constant.MessageConstant;
 import edu.nju.util.enums.*;
@@ -75,15 +77,13 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public ResultVo<ReserveVo> reserve(int roomId, int memberId, Date start, Date end,
-                                       String nameOne, String contact, String extra) {
+                                       String nameOne, String contact, String extra) throws HostelException {
         if (getRoomNum(roomId, start, end)<=0)
-            return new ResultVo<>(false, MessageConstant.ROOM_NOT_ENOUGH,null);
+            throw new HostelException(ErrorCode.ROOM_NOT_ENOUGH, MessageConstant.ROOM_NOT_ENOUGH);
         RoomEntity roomEntity = roomDao.findById(roomId);
         MemberEntity memberEntity = memberDao.findById(memberId);
-        ResultVo<MemberVo> memberVoResultVo = memberService.memberPay(memberId,
+        memberService.memberPay(memberId,
                 (int) discountStrategy.getDiscount(memberEntity.getLevel(),roomEntity.getPrice().intValue()));
-        if (!memberVoResultVo.isSuccess())
-            return new ResultVo<>(false,memberVoResultVo.getMessage(),null);
         ReserveEntity reserveEntity = new ReserveEntity();
         reserveEntity.setRoomEntity(roomEntity);
         reserveEntity.setMemberEntity(memberEntity);
@@ -93,7 +93,7 @@ public class RoomServiceImpl implements RoomService {
         reserveEntity.setContact(contact);
         reserveEntity.setExtra(extra);
         reserveEntity.setState(ReserveState.reserve);
-        return new ResultVo<>(true,MessageConstant.SUCCESS,new ReserveVo(reserveDao.save(reserveEntity)));
+        return new ResultVo<>(ErrorCode.SUCCESS,MessageConstant.SUCCESS,new ReserveVo(reserveDao.save(reserveEntity)));
     }
 
     /**
@@ -104,11 +104,11 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     @Transactional
-    public ResultVo<Boolean> cancelReserve(int reserveId) {
+    public ResultVo<Boolean> cancelReserve(int reserveId) throws HostelException {
         ReserveEntity reserveEntity = reserveDao.findById(reserveId);
         MemberEntity memberEntity = reserveEntity.getMemberEntity();
         if (!authService.isSelf(memberEntity.getId()))
-            return new ResultVo<>(false,MessageConstant.AUTHORITY_FORBIDDEN,null);
+            throw new HostelException(ErrorCode.AUTHORITY_FORBIDDEN, MessageConstant.AUTHORITY_FORBIDDEN);
         int returnMoney = (int) discountStrategy.getDiscount(memberEntity.getLevel(),reserveEntity.getRoomEntity().getPrice().intValue());
         memberEntity.setRemain(memberEntity.getRemain()+returnMoney);
         consumeDao.save(memberEntity,returnMoney,"Return from reservation");
@@ -118,7 +118,7 @@ public class RoomServiceImpl implements RoomService {
         }
         memberDao.save(memberEntity);
         reserveDao.delete(reserveId);
-        return new ResultVo<>(true,MessageConstant.SUCCESS,true);
+        return new ResultVo<>(ErrorCode.SUCCESS,MessageConstant.SUCCESS,true);
     }
 
     /**
@@ -133,11 +133,11 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public ResultVo<CheckVo> checkIn(int roomId, int reserveId, Date start, Date end,
-                                     List<Integer> tenants) {
+                                     List<Integer> tenants) throws HostelException {
         CheckRecordEntity checkRecordEntity = new CheckRecordEntity();
         RoomEntity roomEntity = roomDao.findById(roomId);
         if (tenants.size()>roomEntity.getPeople())
-            return new ResultVo<>(false,MessageConstant.PEOPLE_MAX,null);
+            throw new HostelException(ErrorCode.PEOPLE_MAX, MessageConstant.PEOPLE_MAX);
         checkRecordEntity.setRoomEntity(roomEntity);
         checkRecordEntity.setStart(start);
         checkRecordEntity.setEnd(end);
@@ -152,12 +152,12 @@ public class RoomServiceImpl implements RoomService {
             checkRecordEntity.setPayway(PayWay.member);
             checkRecordEntity.setPay(1);
             reserveDao.save(reserveEntity);
-            return new ResultVo<>(true,MessageConstant.SUCCESS,new CheckVo(checkDao.save(checkRecordEntity)));
+            return new ResultVo<>(ErrorCode.SUCCESS,MessageConstant.SUCCESS,new CheckVo(checkDao.save(checkRecordEntity)));
         }
         if (getRoomNum(roomId, start, end) <= 0) {
-            return new ResultVo<>(false,MessageConstant.ROOM_NOT_ENOUGH,null);
+            throw new HostelException(ErrorCode.ROOM_NOT_ENOUGH, MessageConstant.ROOM_NOT_ENOUGH);
         }
-        return new ResultVo<>(true,MessageConstant.SUCCESS,new CheckVo(checkDao.save(checkRecordEntity)));
+        return new ResultVo<>(ErrorCode.SUCCESS,MessageConstant.SUCCESS,new CheckVo(checkDao.save(checkRecordEntity)));
     }
 
     /**
@@ -168,23 +168,21 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     @Transactional
-    public ResultVo<CheckVo> checkOut(int checkId, int memberId, PayWay payWay) {
+    public ResultVo<CheckVo> checkOut(int checkId, int memberId, PayWay payWay) throws HostelException {
         CheckRecordEntity checkRecordEntity = checkDao.findById(checkId);
         if (payWay!=null) checkRecordEntity.setPayway(payWay);
         if (checkRecordEntity == null) {
-            return new ResultVo<>(false,MessageConstant.CHECK_NOT_FOUND,null);
+            throw new HostelException(ErrorCode.CHECK_NOT_FOUND, MessageConstant.CHECK_NOT_FOUND);
         }
         if (memberId > 0 && payWay == PayWay.member && checkRecordEntity.getPay()==0) {
-            ResultVo<MemberVo> resultVo = memberService.memberPay(memberId,checkRecordEntity.getRoomEntity().getPrice().intValue());
-            if (!resultVo.isSuccess())
-                return new ResultVo<>(false,resultVo.getMessage(),null);
+            memberService.memberPay(memberId,checkRecordEntity.getRoomEntity().getPrice().intValue());
             checkRecordEntity.setPay(1);
         }
         checkRecordEntity.setState(CheckState.complete);
         if (checkRecordEntity.getPayway() == PayWay.member) {
             checkRecordEntity.setState(CheckState.checkOut);
         }
-        return new ResultVo<>(true,MessageConstant.SUCCESS,new CheckVo(checkDao.save(checkRecordEntity)));
+        return new ResultVo<>(ErrorCode.SUCCESS,MessageConstant.SUCCESS,new CheckVo(checkDao.save(checkRecordEntity)));
     }
 
     /**

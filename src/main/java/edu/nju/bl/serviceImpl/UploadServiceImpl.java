@@ -7,14 +7,10 @@ import com.aliyun.oss.model.PolicyConditions;
 import edu.nju.bl.service.UploadService;
 import edu.nju.bl.vo.OssPolicyVo;
 import edu.nju.web.config.OssConfig;
-import net.sf.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * Oss upload policy service
  * @author cuihao

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResultVo<T> {
 
-    private boolean success;
+    private int code;
     private String message;
     private T data;
 

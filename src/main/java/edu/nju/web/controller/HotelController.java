@@ -2,6 +2,8 @@ package edu.nju.web.controller;
 
 import edu.nju.bl.service.HotelService;
 import edu.nju.bl.vo.*;
+import edu.nju.util.constant.ErrorCode;
+import edu.nju.util.constant.MessageConstant;
 import edu.nju.util.enums.Gender;
 import edu.nju.util.enums.HotelStar;
 import edu.nju.web.json.HotelCreateJson;
@@ -12,7 +14,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -50,12 +51,11 @@ public class HotelController {
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "hotel", value = "hotel data", required = true, dataType = "HotelCreateJson")
     @PostMapping(value = "", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<HotelVo> create(@Valid @RequestParam HotelCreateJson hotel, BindingResult result) {
-        if (result.hasErrors()) return new ResultVo<>(false,result.getAllErrors().toString(),null);
+    public ResultVo<HotelVo> create(@Valid @RequestParam HotelCreateJson hotel) {
         HotelVo hotelVo = hotelService.createHotel(hotel.getName(),hotel.getPassword(),hotel.getPhone(),hotel.getAvatar(),
                 Gender.valueOf(hotel.getGender()),hotel.getFullName(),hotel.getLocation(),hotel.getX(),hotel.getY(),
                 hotel.getDescription(),hotel.getSummary(), HotelStar.valueOf(hotel.getHotelStar()),hotel.getPicture());
-        return new ResultVo<>(true,"",hotelVo);
+        return new ResultVo<>(ErrorCode.SUCCESS, MessageConstant.SUCCESS,hotelVo);
     }
 
     @ApiOperation(value = "Edit hotel",notes = "Edit hotel info, need to be examined.",
@@ -63,12 +63,11 @@ public class HotelController {
     @ApiImplicitParam(name = "hotel", value = "hotel data", required = true, dataType = "HotelEditJson")
     @PutMapping(value = "/{hotelId}/edit", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<HotelTempVo> edit(@PathVariable int hotelId,
-                                      @Valid @RequestParam HotelEditJson hotel, BindingResult result) {
-        if (result.hasErrors()) return new ResultVo<>(false,result.getAllErrors().toString(),null);
+                                      @Valid @RequestParam HotelEditJson hotel) {
         HotelTempVo hotelTempVo = hotelService.editHotel(hotelId,hotel.getFullName(),hotel.getLocation(),
                 hotel.getX(),hotel.getY(),hotel.getDescription(),hotel.getSummary(),HotelStar.valueOf(hotel.getHotelStar()),
                 hotel.getPicture());
-        return new ResultVo<>(true,"",hotelTempVo);
+        return new ResultVo<>(ErrorCode.SUCCESS, MessageConstant.SUCCESS,hotelTempVo);
     }
 
     @ApiOperation(value = "Get hotel reservations",notes = "Get all reservations of a hotel.",

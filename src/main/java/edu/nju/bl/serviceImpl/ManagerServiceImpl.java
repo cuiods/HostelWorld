@@ -10,6 +10,8 @@ import edu.nju.data.dao.CheckDao;
 import edu.nju.data.dao.HotelDao;
 import edu.nju.data.dao.HotelTempDao;
 import edu.nju.data.entity.*;
+import edu.nju.exception.HostelException;
+import edu.nju.util.constant.ErrorCode;
 import edu.nju.util.constant.MessageConstant;
 import edu.nju.util.enums.CheckState;
 import edu.nju.util.enums.HotelState;
@@ -46,12 +48,12 @@ public class ManagerServiceImpl implements ManagerService {
      * @param hotelId hotel id
      */
     @Override
-    public ResultVo<Boolean> approveHotelCreate(int hotelId) {
+    public ResultVo<Boolean> approveHotelCreate(int hotelId) throws HostelException {
         HotelEntity hotelEntity = hotelDao.findById(hotelId);
-        if (hotelEntity == null) return new ResultVo<>(false, MessageConstant.HOTEL_NOT_FOUND,null);
+        if (hotelEntity == null) throw new HostelException(ErrorCode.HOTEL_NOT_FOUND, MessageConstant.HOTEL_NOT_FOUND);
         hotelEntity.setState(HotelState.normal);
         hotelDao.save(hotelEntity);
-        return new ResultVo<>(true,MessageConstant.SUCCESS,true);
+        return new ResultVo<>(ErrorCode.SUCCESS,MessageConstant.SUCCESS,true);
     }
 
     /**
@@ -90,16 +92,16 @@ public class ManagerServiceImpl implements ManagerService {
      * @param hotelId hotel id
      */
     @Override
-    public ResultVo<Boolean> approveHotelEdit(int hotelId) {
+    public ResultVo<Boolean> approveHotelEdit(int hotelId) throws HostelException {
         HotelTempEntity hotelTempEntity = hotelTempDao.findById(hotelId);
-        if (hotelTempEntity == null) return new ResultVo<>(false,MessageConstant.EDIT_NOT_FOUND,null);
+        if (hotelTempEntity == null) throw new HostelException(ErrorCode.EDIT_NOT_FOUND, MessageConstant.EDIT_NOT_FOUND);
         hotelTempEntity.setState(HotelState.normal);
         HotelEntity hotelEntity = hotelDao.findById(hotelId);
-        if (hotelEntity == null) return new ResultVo<>(false,MessageConstant.HOTEL_NOT_FOUND,null);
+        if (hotelEntity == null) throw new HostelException(ErrorCode.HOTEL_NOT_FOUND, MessageConstant.HOTEL_NOT_FOUND);
         BeanUtils.copyProperties(hotelTempEntity,hotelEntity);
         hotelDao.save(hotelEntity);
         hotelTempDao.save(hotelTempEntity);
-        return new ResultVo<>(true,MessageConstant.SUCCESS,true);
+        return new ResultVo<>(ErrorCode.SUCCESS,MessageConstant.SUCCESS,true);
     }
 
     /**
@@ -109,10 +111,10 @@ public class ManagerServiceImpl implements ManagerService {
      */
     @Override
     @Transactional
-    public ResultVo<Boolean> completeCheckOutRecord(int checkId) {
+    public ResultVo<Boolean> completeCheckOutRecord(int checkId) throws HostelException {
         CheckRecordEntity checkRecordEntity = checkDao.findById(checkId);
         if (checkRecordEntity == null)
-            return new ResultVo<>(false,MessageConstant.CHECK_NOT_FOUND,null);
+            throw new HostelException(ErrorCode.CHECK_NOT_FOUND,MessageConstant.CHECK_NOT_FOUND);
         RoomEntity roomEntity = checkRecordEntity.getRoomEntity();
         HotelEntity hotelEntity = roomEntity.getHotelEntity();
         AccountEntity defaultAccount = hotelEntity.getAccountEntities().get(0);
@@ -120,7 +122,7 @@ public class ManagerServiceImpl implements ManagerService {
         accountDao.save(defaultAccount);
         checkRecordEntity.setState(CheckState.complete);
         checkDao.save(checkRecordEntity);
-        return new ResultVo<>(true,MessageConstant.SUCCESS,true);
+        return new ResultVo<>(ErrorCode.SUCCESS,MessageConstant.SUCCESS,true);
     }
 
     /**
@@ -129,9 +131,10 @@ public class ManagerServiceImpl implements ManagerService {
      * @param checkIds check ids
      */
     @Override
-    public ResultVo<Boolean> completeCheckOutRecord(List<Integer> checkIds) {
-        int success = (int) checkIds.stream()
-                .map(this::completeCheckOutRecord).filter(ResultVo::isSuccess).count();
-        return new ResultVo<>(success == checkIds.size(), "Completed "+success+" check record(s).",null);
+    public ResultVo<Boolean> completeCheckOutRecord(List<Integer> checkIds) throws HostelException {
+        for (Integer integer: checkIds) {
+            completeCheckOutRecord(integer);
+        }
+        return new ResultVo<>(ErrorCode.SUCCESS, MessageConstant.SUCCESS,true);
     }
 }

@@ -3,6 +3,7 @@ package edu.nju.bl.service;
 import edu.nju.bl.vo.AccountVo;
 import edu.nju.bl.vo.ResultVo;
 import edu.nju.data.entity.UserEntity;
+import edu.nju.exception.HostelException;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public interface AccountService {
      * @param number pay number
      * @return {@link ResultVo<AccountVo>}
      */
-    ResultVo<AccountVo> accountPay(int accountId, int number);
+    ResultVo<AccountVo> accountPay(int accountId, int number) throws HostelException;
 
     /**
      * Create default account for user

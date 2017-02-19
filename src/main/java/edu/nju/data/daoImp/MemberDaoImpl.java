@@ -3,6 +3,11 @@ package edu.nju.data.daoImp;
 import edu.nju.data.dao.MemberDao;
 import edu.nju.data.entity.MemberEntity;
 import edu.nju.data.repository.crud.MemberRepository;
+import edu.nju.data.repository.page.MemberPageRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -17,6 +22,9 @@ public class MemberDaoImpl implements MemberDao {
 
     @Resource
     private MemberRepository memberRepository;
+
+    @Resource
+    private MemberPageRepository memberPageRepository;
 
     /**
      * Find member by id
@@ -69,5 +77,12 @@ public class MemberDaoImpl implements MemberDao {
     @Override
     public List<MemberEntity> findAll() {
         return (List<MemberEntity>) memberRepository.findAll();
+    }
+
+    @Override
+    public Page<MemberEntity> findAll(int page, int pageSize, String sortColumn, Sort.Direction sortDirection) {
+        Sort sort = new Sort(sortDirection, sortColumn);
+        Pageable pageable = new PageRequest(page,pageSize,sort);
+        return memberPageRepository.findAll(pageable);
     }
 }

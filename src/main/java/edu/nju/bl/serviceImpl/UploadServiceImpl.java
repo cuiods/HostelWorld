@@ -23,7 +23,7 @@ public class UploadServiceImpl implements UploadService {
 
     @Override
     public OssPolicyVo getUserOssPolicy() {
-        return generatePolicy("user");
+        return generatePolicy("/user");
     }
 
     /**
@@ -33,7 +33,7 @@ public class UploadServiceImpl implements UploadService {
      */
     @Override
     public OssPolicyVo getRoomPolicy() {
-        return generatePolicy("room");
+        return generatePolicy("/room");
     }
 
     private OssPolicyVo generatePolicy(String dir) {

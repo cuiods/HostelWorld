@@ -18,6 +18,9 @@ import edu.nju.util.constant.MessageConstant;
 import edu.nju.util.enums.Gender;
 import edu.nju.util.enums.MemberState;
 import edu.nju.util.enums.UserType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +55,20 @@ public class MemberServiceImpl implements MemberService {
 
     @Resource
     private ExchangeScoreStrategy exchangeScoreStrategy;
+
+    /**
+     * Get list of hotel
+     *
+     * @param page     page number
+     * @param pageSize maxSize
+     * @return List of {@link HotelVo}
+     */
+    @Override
+    public Page<MemberVo> getMemberList(int page, int pageSize) {
+        Page<MemberEntity> memberEntities = memberDao.findAll(page,pageSize,"id", Sort.Direction.ASC);
+        return new PageImpl<>(memberEntities.getContent().stream().map(MemberVo::new).collect(Collectors.toList()),
+                memberEntities.nextPageable(),memberEntities.getTotalElements());
+    }
 
     /**
      * Get member basic person info, not including extra info.

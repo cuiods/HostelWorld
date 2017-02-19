@@ -1,6 +1,8 @@
 package edu.nju.data.dao;
 
 import edu.nju.data.entity.MemberEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -42,5 +44,7 @@ public interface MemberDao {
      * @return list of {@link MemberEntity}
      */
     List<MemberEntity> findAll();
+
+    Page<MemberEntity> findAll(int page, int pageSize, String sortColumn, Sort.Direction sortDirection);
 
 }

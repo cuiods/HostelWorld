@@ -5,13 +5,11 @@ import edu.nju.bl.vo.*;
 import edu.nju.exception.HostelException;
 import edu.nju.util.constant.ErrorCode;
 import edu.nju.util.enums.Gender;
-import edu.nju.web.json.ExchangeJson;
-import edu.nju.web.json.MemberEditJson;
-import edu.nju.web.json.MemberJson;
-import edu.nju.web.json.TransferJson;
+import edu.nju.web.json.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +28,14 @@ public class MemberController {
 
     @Resource
     private MemberService memberService;
+
+    @ApiOperation(value = "Get member list",notes = "Get a page of memberVo",
+            response = Page.class, produces = "application/json;charset=UTF-8")
+    @ApiImplicitParam(name = "pageJson", value = "page setting", required = true, dataType = "PageJson")
+    @GetMapping(value = "", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Page<MemberVo> memberList(@Valid @RequestParam PageJson pageJson) {
+        return memberService.getMemberList(pageJson.getPage(),pageJson.getPageSize());
+    }
 
     @ApiOperation(value = "Get member info",notes = "Get detail info of a member.",
             response = MemberVo.class,responseContainer = "ResultVo", produces = "application/json;charset=UTF-8")

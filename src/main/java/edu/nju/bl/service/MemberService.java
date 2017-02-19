@@ -3,6 +3,7 @@ package edu.nju.bl.service;
 import edu.nju.bl.vo.*;
 import edu.nju.exception.HostelException;
 import edu.nju.util.enums.Gender;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -11,6 +12,14 @@ import java.util.List;
  * @author cuihao
  */
 public interface MemberService {
+
+    /**
+     * Get list of hotel
+     * @param page page number
+     * @param pageSize maxSize
+     * @return List of {@link HotelVo}
+     */
+    Page<MemberVo> getMemberList(int page, int pageSize);
 
     /**
      * Get member basic person info, not including extra info.

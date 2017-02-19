@@ -32,8 +32,8 @@ public class MemberController {
     @ApiOperation(value = "Get member list",notes = "Get a page of memberVo",
             response = Page.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "pageJson", value = "page setting", required = true, dataType = "PageJson")
-    @GetMapping(value = "", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Page<MemberVo> memberList(@Valid @RequestParam PageJson pageJson) {
+    @PostMapping(value = "/list", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Page<MemberVo> memberList(@Valid @RequestBody PageJson pageJson) {
         return memberService.getMemberList(pageJson.getPage(),pageJson.getPageSize());
     }
 
@@ -57,7 +57,7 @@ public class MemberController {
     @ApiOperation(value = "Edit member",notes = "Edit member info.",
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "memberEditJson", value = "member edit data", required = true, dataType = "MemberEditJson")
-    @PostMapping(value = "/edit",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = "/edit",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<MemberVo> editMember(@Valid @RequestBody MemberEditJson memberEditJson) {
         return new ResultVo<>(ErrorCode.SUCCESS,null,memberService.editMember(memberEditJson.getMemberId(),
                 memberEditJson.getPassword(),memberEditJson.getAvatar(),Gender.valueOf(memberEditJson.getGender()),
@@ -68,7 +68,7 @@ public class MemberController {
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "transferJson", value = "transfer data", required = true, dataType = "TransferJson")
     @PostMapping(value = "/recharge", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<MemberVo> recharge(@Valid @RequestParam TransferJson transferJson) throws HostelException {
+    public ResultVo<MemberVo> recharge(@Valid @RequestBody TransferJson transferJson) throws HostelException {
         return memberService.transferToRemain(transferJson.getMemberId(),transferJson.getAccountId(),transferJson.getMoney());
     }
 

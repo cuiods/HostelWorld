@@ -20,7 +20,7 @@ public class HotelCreateJson {
     private String phone;
     @NotNull
     private String avatar;
-    @Pattern(regexp = "/^(male|female)$/")
+    @Pattern(regexp = "male|female")
     private String gender;
     @NotEmpty
     private String fullName;
@@ -30,7 +30,7 @@ public class HotelCreateJson {
     private double y;
     private String description;
     private String summary;
-    @Pattern(regexp = "/^(one|two|three|four|five)$/")
+    @Pattern(regexp = "one|two|three|four|five")
     private String hotelStar;
     @NotNull
     private String picture;

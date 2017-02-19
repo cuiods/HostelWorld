@@ -35,8 +35,8 @@ public class HotelController {
     @ApiOperation(value = "Get hotel list",notes = "Get a page of hotelVo",
             response = Page.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "pageJson", value = "page setting", required = true, dataType = "PageJson")
-    @GetMapping(value = "", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Page<HotelVo> hotelList(@Valid @RequestParam PageJson pageJson) {
+    @PostMapping(value = "/list", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Page<HotelVo> hotelList(@Valid @RequestBody PageJson pageJson) {
         return hotelService.getHotelList(pageJson.getPage(),pageJson.getPageSize());
     }
 
@@ -51,7 +51,7 @@ public class HotelController {
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "hotel", value = "hotel data", required = true, dataType = "HotelCreateJson")
     @PostMapping(value = "", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<HotelVo> create(@Valid @RequestParam HotelCreateJson hotel) {
+    public ResultVo<HotelVo> create(@Valid @RequestBody HotelCreateJson hotel) {
         HotelVo hotelVo = hotelService.createHotel(hotel.getName(),hotel.getPassword(),hotel.getPhone(),hotel.getAvatar(),
                 Gender.valueOf(hotel.getGender()),hotel.getFullName(),hotel.getLocation(),hotel.getX(),hotel.getY(),
                 hotel.getDescription(),hotel.getSummary(), HotelStar.valueOf(hotel.getHotelStar()),hotel.getPicture());
@@ -63,7 +63,7 @@ public class HotelController {
     @ApiImplicitParam(name = "hotel", value = "hotel data", required = true, dataType = "HotelEditJson")
     @PutMapping(value = "/{hotelId}/edit", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<HotelTempVo> edit(@PathVariable int hotelId,
-                                      @Valid @RequestParam HotelEditJson hotel) {
+                                      @Valid @RequestBody HotelEditJson hotel) {
         HotelTempVo hotelTempVo = hotelService.editHotel(hotelId,hotel.getFullName(),hotel.getLocation(),
                 hotel.getX(),hotel.getY(),hotel.getDescription(),hotel.getSummary(),HotelStar.valueOf(hotel.getHotelStar()),
                 hotel.getPicture());

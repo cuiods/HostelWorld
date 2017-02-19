@@ -43,7 +43,7 @@ public class CheckController {
     @ApiImplicitParam(name = "checkJson", value = "check in data", required = true, dataType = "CheckJson")
     @PostMapping(value = "", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<CheckVo> checkIn(@Valid @RequestBody CheckJson checkJson) throws HostelException {
-        return roomService.checkIn(checkJson.getRoomId(),checkJson.getReserveId(),
+        return roomService.checkIn(checkJson.getRoomId(),checkJson.getMemberId(),
                 Date.valueOf(checkJson.getStart()), Date.valueOf(checkJson.getEnd()),checkJson.getTenants());
     }
 
@@ -63,7 +63,8 @@ public class CheckController {
         tenantEntity.setName(tenantJson.getName());
         tenantEntity.setPhone(tenantJson.getPhone());
         tenantEntity.setIdCard(tenantJson.getIdCard());
-        return new ResultVo<>(ErrorCode.SUCCESS, MessageConstant.SUCCESS,new TenantVo(tenantDao.save(tenantEntity)));
+        return new ResultVo<>(ErrorCode.SUCCESS, MessageConstant.SUCCESS,
+                new TenantVo(tenantDao.findById(tenantDao.save(tenantEntity).getId())));
     }
 
     @ApiOperation(value = "Delete a tenant",notes = "Delete directly, cannot undo.",

@@ -2,6 +2,8 @@ package edu.nju.data.dao;
 
 import edu.nju.data.entity.ReserveEntity;
 
+import java.sql.Date;
+
 /**
  * Reserve entity dao
  * @author cuihao
@@ -21,6 +23,12 @@ public interface ReserveDao {
      * @return saved {@link ReserveEntity}
      */
     ReserveEntity save(ReserveEntity reserveEntity);
+
+    /**
+     * find member reserve
+     * @return memberReserve
+     */
+    ReserveEntity findMemberReserve(int memberId, int roomId, Date start, Date end);
 
     /**
      * Delete reserve(set deleted_at)

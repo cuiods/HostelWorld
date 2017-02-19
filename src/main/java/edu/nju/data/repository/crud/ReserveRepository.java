@@ -13,7 +13,5 @@ import java.util.List;
  */
 public interface ReserveRepository extends CrudRepository<ReserveEntity,Integer>{
 
-    List<ReserveEntity> findByRoomEntityAndStartGreaterThanAndEndLessThan(RoomEntity roomEntity, Date start, Date end);
-
-    List<ReserveEntity> findByRoomEntityAndState(RoomEntity roomEntity, ReserveState state);
+    List<ReserveEntity> findByMemberEntity_IdAndRoomEntity_IdAndStartAndEnd(int memberEntity_Id, int roomEntity_Id, Date start, Date end);
 }

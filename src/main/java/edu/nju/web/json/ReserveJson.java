@@ -15,9 +15,9 @@ public class ReserveJson {
     private int roomId;
     @NotNull(message = "Member id cannot be empty.")
     private int memberId;
-    @Pattern(regexp = "/^(\\d{4})-(0\\d{1}|1[0-2])-(0\\d{1}|[12]\\d{1}|3[01])$/",message = "Unsupported date format.")
+    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}",message = "Unsupported date format.")
     private String start;
-    @Pattern(regexp = "/^(\\d{4})-(0\\d{1}|1[0-2])-(0\\d{1}|[12]\\d{1}|3[01])$/",message = "Unsupported date format.")
+    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}",message = "Unsupported date format.")
     private String end;
     @Length(max = 50, message = "max name length is 50.")
     private String name;

@@ -6,7 +6,9 @@ import edu.nju.data.repository.crud.ReserveRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * Reserve dao impl
@@ -37,6 +39,19 @@ public class ReserveDaoImpl implements ReserveDao {
     @Override
     public ReserveEntity save(ReserveEntity reserveEntity) {
         return reserveRepository.save(reserveEntity);
+    }
+
+    /**
+     * find member reserve
+     *
+     * @return memberReserve
+     */
+    @Override
+    public ReserveEntity findMemberReserve(int memberId, int roomId, Date start, Date end) {
+        List<ReserveEntity> reserveEntities =
+                reserveRepository.findByMemberEntity_IdAndRoomEntity_IdAndStartAndEnd(memberId, roomId, start, end);
+        if (reserveEntities==null || reserveEntities.size()==0) return null;
+        return reserveEntities.get(0);
     }
 
     /**

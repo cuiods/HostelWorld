@@ -2,6 +2,7 @@ package edu.nju.web.controller;
 
 import edu.nju.bl.service.AccountService;
 import edu.nju.bl.vo.AccountVo;
+import edu.nju.web.json.ExchangeJson;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -33,10 +34,10 @@ public class AccountController {
 
     @ApiOperation(value = "Get available accounts",notes = "Get available accounts which has enough money according to money parameter",
             response = AccountVo.class,responseContainer = "List", produces = "application/json;charset=UTF-8")
-    @ApiImplicitParam(name = "money", value = "money to pay", required = true, dataType = "Integer")
+    @ApiImplicitParam(name = "money", value = "money to pay", required = true, dataType = "ExchangeJson")
     @GetMapping(value = "{id}/available",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public List<AccountVo> accountAvailable(@PathVariable("id") int userId, int money) {
-        return accountService.getAvailableAccounts(userId,money);
+    public List<AccountVo> accountAvailable(@PathVariable("id") int userId, ExchangeJson money) {
+        return accountService.getAvailableAccounts(userId,money.getScore());
     }
 
 }

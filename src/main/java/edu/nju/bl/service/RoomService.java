@@ -36,7 +36,7 @@ public interface RoomService {
      * room checkin service
      * @return {@link ResultVo<CheckVo>}
      */
-    ResultVo<CheckVo> checkIn(int roomId, int reserveId, Date start, Date end, List<Integer> tenants) throws HostelException;
+    ResultVo<CheckVo> checkIn(int roomId, int memberId, Date start, Date end, List<Integer> tenants) throws HostelException;
 
     /**
      * Room check out service

@@ -127,7 +127,7 @@ public class HotelServiceImpl implements HotelService {
         hotelEntity.setAuthorityEntities(authorityDao.findHotelPause());
         HotelEntity hotelEntitySaved = hotelDao.save(hotelEntity);
         accountService.createAccount(hotelEntitySaved);
-        return new HotelVo(hotelEntitySaved);
+        return new HotelVo(hotelDao.findById(hotelEntitySaved.getId()));
     }
 
     /**
@@ -149,7 +149,8 @@ public class HotelServiceImpl implements HotelService {
                                  String description, String summary, HotelStar hotelStar, String picture) {
         HotelEntity hotelEntity = hotelDao.findById(userId);
         if (hotelEntity == null) return null;
-        HotelTempEntity hotelTempEntity = new HotelTempEntity();
+        HotelTempEntity hotelTempEntity = hotelTempDao.findById(userId);
+        if (hotelTempEntity == null) hotelTempEntity = new HotelTempEntity();
         hotelTempEntity.setId(hotelEntity.getId());
         hotelTempEntity.setFullname(fullName);
         hotelTempEntity.setLocation(location);
@@ -160,7 +161,7 @@ public class HotelServiceImpl implements HotelService {
         hotelTempEntity.setStar(hotelStar);
         hotelTempEntity.setPicture(picture);
         hotelTempEntity.setState(HotelState.edit);
-        return new HotelTempVo(hotelTempDao.save(hotelTempEntity));
+        return new HotelTempVo(hotelTempDao.findById(hotelTempDao.save(hotelTempEntity).getId()));
     }
 
     /**

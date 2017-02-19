@@ -13,6 +13,7 @@ public class ErrorCode {
     public static final int HOTEL_NOT_FOUND = 422;
     public static final int EDIT_NOT_FOUND = 423;
     public static final int ACCOUNT_NOT_FOUND = 424;
+    public static final int RESERVATION_NOT_FOUND = 425;
 
     public static final int ACCOUNT_CONFLICT = 430;
     public static final int MEMBER_CONFLICT = 431;

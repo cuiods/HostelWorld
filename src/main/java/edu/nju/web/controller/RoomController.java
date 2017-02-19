@@ -38,7 +38,7 @@ public class RoomController {
             response = RoomVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "roomJson", value = "room data", required = true, dataType = "RoomJson")
     @PostMapping(value = "", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<RoomVo> create(@Valid @RequestParam RoomJson roomJson) {
+    public ResultVo<RoomVo> create(@Valid @RequestBody RoomJson roomJson) {
         RoomVo roomVo =  roomService.createRoom(roomJson.getHotelId(),roomJson.getRoomType(),roomJson.getSize(),
                 roomJson.getPeople(), BedType.valueOf(roomJson.getBedType()),roomJson.getDescription(),
                 roomJson.getNumber(),new BigDecimal(roomJson.getPrice()), Date.valueOf(roomJson.getStart()),Date.valueOf(roomJson.getEnd()));
@@ -48,8 +48,8 @@ public class RoomController {
     @ApiOperation(value = "Get room detail",notes = "Get room detail info with left room number.",
             response = RoomVo.class,responseContainer = "ResultVo", produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "dateRangeJson", value = "date query range", required = true, dataType = "DateRangeJson")
-    @GetMapping(value = "/{id}",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<RoomVo> roomDetail(@PathVariable int id, @Valid @RequestParam DateRangeJson dateRangeJson) {
+    @PostMapping(value = "/{id}",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultVo<RoomVo> roomDetail(@PathVariable int id, @Valid @RequestBody DateRangeJson dateRangeJson) {
         RoomVo roomVo =  roomService.getRoomDetail(id,Date.valueOf(dateRangeJson.getStart()),Date.valueOf(dateRangeJson.getEnd()));
         return new ResultVo<>(ErrorCode.SUCCESS, MessageConstant.SUCCESS,roomVo);
     }

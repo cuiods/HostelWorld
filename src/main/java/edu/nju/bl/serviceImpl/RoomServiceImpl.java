@@ -82,6 +82,7 @@ public class RoomServiceImpl implements RoomService {
             throw new HostelException(ErrorCode.ROOM_NOT_ENOUGH, MessageConstant.ROOM_NOT_ENOUGH);
         RoomEntity roomEntity = roomDao.findById(roomId);
         MemberEntity memberEntity = memberDao.findById(memberId);
+        int money = (int) discountStrategy.getDiscount(memberEntity.getLevel(),roomEntity.getPrice().intValue());
         memberService.memberPay(memberId,
                 (int) discountStrategy.getDiscount(memberEntity.getLevel(),roomEntity.getPrice().intValue()));
         ReserveEntity reserveEntity = new ReserveEntity();
@@ -105,7 +106,7 @@ public class RoomServiceImpl implements RoomService {
      */
     @Override
     @Transactional
-    public ResultVo<Boolean> cancelReserve(int reserveId) throws HostelException {
+    public ResultVo<Integer> cancelReserve(int reserveId) throws HostelException {
         ReserveEntity reserveEntity = reserveDao.findById(reserveId);
         MemberEntity memberEntity = reserveEntity.getMemberEntity();
         if (!authService.isSelf(memberEntity.getId()))
@@ -119,7 +120,7 @@ public class RoomServiceImpl implements RoomService {
         }
         memberDao.save(memberEntity);
         reserveDao.delete(reserveId);
-        return new ResultVo<>(ErrorCode.SUCCESS,MessageConstant.SUCCESS,true);
+        return new ResultVo<>(ErrorCode.SUCCESS,MessageConstant.SUCCESS,memberEntity.getId());
     }
 
     /**

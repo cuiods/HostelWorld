@@ -33,6 +33,6 @@ public class ConsumeDaoImpl implements ConsumeDao {
         consumeRecordEntity.setMemberEntity(entity);
         consumeRecordEntity.setNumber(number);
         consumeRecordEntity.setDescription(description);
-        return consumeRecordEntity;
+        return consumeRepository.save(consumeRecordEntity);
     }
 }

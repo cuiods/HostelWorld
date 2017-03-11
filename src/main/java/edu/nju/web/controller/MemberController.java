@@ -57,7 +57,7 @@ public class MemberController {
     @ApiOperation(value = "Edit member",notes = "Edit member info.",
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "memberEditJson", value = "member edit data", required = true, dataType = "MemberEditJson")
-    @PutMapping(value = "/edit",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/edit",produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<MemberVo> editMember(@Valid @RequestBody MemberEditJson memberEditJson) {
         return new ResultVo<>(ErrorCode.SUCCESS,null,memberService.editMember(memberEditJson.getMemberId(),
                 memberEditJson.getPassword(),memberEditJson.getAvatar(),Gender.valueOf(memberEditJson.getGender()),

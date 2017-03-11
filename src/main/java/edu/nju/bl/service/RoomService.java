@@ -30,7 +30,7 @@ public interface RoomService {
      * @param reserveId reserve id
      * @return {@link ResultVo}
      */
-    ResultVo<Boolean> cancelReserve(int reserveId) throws HostelException;
+    ResultVo<Integer> cancelReserve(int reserveId) throws HostelException;
 
     /**
      * room checkin service

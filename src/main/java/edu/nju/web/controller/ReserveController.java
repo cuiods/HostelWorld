@@ -40,7 +40,7 @@ public class ReserveController {
     @ApiOperation(value = "Cancel reservation",notes = "Cancel reservation and get money back.",
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @PostMapping(value = "/{reserveId}/cancel", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultVo<Boolean> cancel(@PathVariable int reserveId) throws HostelException {
+    public ResultVo<Integer> cancel(@PathVariable int reserveId) throws HostelException {
         return roomService.cancelReserve(reserveId);
     }
 

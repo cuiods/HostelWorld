@@ -17,7 +17,7 @@ public class MemberEditJson {
     private String password;
     @NotNull
     private String avatar;
-    @Pattern(regexp = "/^(male|female)$/")
+    @Pattern(regexp = "male|female")
     private String gender;
     private String description;
 }

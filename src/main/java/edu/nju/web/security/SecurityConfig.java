@@ -35,7 +35,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .antMatchers("/api/v1/hotel/**/reserve").access("hasAuthority('HOTEL_PAUSE')")
                 .antMatchers("/api/v1/hotel/**/check").access("hasAuthority('HOTEL_PAUSE')")
                 .antMatchers("/api/v1/manager/**").access("hasAuthority('MANAGER')")
-                .antMatchers("/api/v1/member/**").access("hasAuthority('MEMBER_PAUSE')")
                 .antMatchers("/api/v1/reserve/**").access("hasAuthority('MEMBER_PAUSE')")
                 .antMatchers("/api/v1/reserve").access("hasAuthority('MEMBER_ACTIVE')")
                 .antMatchers("/api/v1/room").access("hasAuthority('HOTEL_ACTIVE')")

@@ -19,10 +19,8 @@ public class ReserveVo {
     private int id;
     private Date start;
     private Date end;
-    private String nameOne;
-    private String nameTwo;
+    private String name;
     private String contact;
-    private String email;
     private ReserveState state;
     private String extra;
     private Timestamp createdAt;

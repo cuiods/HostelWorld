@@ -1,6 +1,7 @@
 package edu.nju.data.entity;
 
 import edu.nju.util.enums.MemberState;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -45,6 +46,7 @@ public class MemberEntity extends UserEntity{
     }
 
     @OneToMany
+    @Where(clause="deleted_at is null")
     @JoinColumn(name = "memberid")
     public List<ReserveEntity> getReserveEntities() {
         return reserveEntities;

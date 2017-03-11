@@ -18,10 +18,10 @@ public class DiscountStrategyImpl implements DiscountStrategy {
      */
     @Override
     public double getDiscount(int level, int price) {
-        int levelLine[] = new int[]{1000,5000,20000};
-        double discount[] = new double[]{0.98, 0.95, 0.92};
+        int levelLine[] = new int[]{1000,5000,10000,20000};
+        double discount[] = new double[]{0.98, 0.96, 0.94, 0.92};
         for (int i = 0; i < levelLine.length; i++) {
-            if (level<levelLine[i]) return discount[i]*level;
+            if (level<levelLine[i]) return discount[i]*price;
         }
         return 0.9 * price;
     }

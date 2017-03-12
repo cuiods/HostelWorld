@@ -21,6 +21,5 @@ public class HotelEditJson {
     private String summary;
     @Pattern(regexp = "one|two|three|four|five")
     private String hotelStar;
-    @NotNull
     private String picture;
 }

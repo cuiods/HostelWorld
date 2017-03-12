@@ -67,7 +67,7 @@ public class HotelController {
     @ApiOperation(value = "Edit hotel",notes = "Edit hotel info, need to be examined.",
             response = ResultVo.class, produces = "application/json;charset=UTF-8")
     @ApiImplicitParam(name = "hotel", value = "hotel data", required = true, dataType = "HotelEditJson")
-    @PutMapping(value = "/{hotelId}/edit", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{hotelId}/edit", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultVo<HotelTempVo> edit(@PathVariable int hotelId,
                                       @Valid @RequestBody HotelEditJson hotel) {
         HotelTempVo hotelTempVo = hotelService.editHotel(hotelId,hotel.getFullName(),hotel.getLocation(),

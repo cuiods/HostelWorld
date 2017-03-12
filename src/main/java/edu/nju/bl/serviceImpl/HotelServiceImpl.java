@@ -208,12 +208,10 @@ public class HotelServiceImpl implements HotelService {
     public List<RoomVo> getAvailableRooms(int hotelId) {
         HotelEntity hotelEntity = hotelDao.findById(hotelId);
         Date today = new Date(System.currentTimeMillis());
-        MemberEntity memberEntity = authService.getCurrentUser();
         return hotelEntity.getRoomEntities().stream()
                 .filter(roomEntity -> roomEntity.getStart().before(today) && roomEntity.getEnd().after(today))
                 .map(roomEntity -> new RoomVo(roomEntity,
-                        roomService.getRoomNum(roomEntity.getId(),roomEntity.getStart(),roomEntity.getEnd()),
-                        memberEntity==null?-1:(int)discountStrategy.getDiscount(memberEntity.getLevel(),roomEntity.getPrice().intValue())))
+                        roomService.getRoomNum(roomEntity.getId(),roomEntity.getStart(),roomEntity.getEnd()), -1))
                 .collect(Collectors.toList());
     }
 }

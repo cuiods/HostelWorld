@@ -27,6 +27,7 @@ public class CheckVo {
     private Timestamp createdAt;
     private Timestamp updateAt;
     private RoomVo roomVo;
+    private Integer pay;
     private List<TenantVo> tenantVos;
 
     public CheckVo(CheckRecordEntity checkRecordEntity) {

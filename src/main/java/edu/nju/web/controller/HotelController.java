@@ -1,6 +1,7 @@
 package edu.nju.web.controller;
 
 import edu.nju.bl.service.HotelService;
+import edu.nju.bl.service.RoomService;
 import edu.nju.bl.vo.*;
 import edu.nju.util.constant.ErrorCode;
 import edu.nju.util.constant.MessageConstant;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Rest controller for hotel module
@@ -31,6 +34,9 @@ public class HotelController {
 
     @Resource
     private HotelService hotelService;
+
+    @Resource
+    private RoomService roomService;
 
     @ApiOperation(value = "Get hotel list",notes = "Get a page of hotelVo",
             response = Page.class, produces = "application/json;charset=UTF-8")
@@ -68,6 +74,16 @@ public class HotelController {
                 hotel.getX(),hotel.getY(),hotel.getDescription(),hotel.getSummary(),HotelStar.valueOf(hotel.getHotelStar()),
                 hotel.getPicture());
         return new ResultVo<>(ErrorCode.SUCCESS, MessageConstant.SUCCESS,hotelTempVo);
+    }
+
+    @ApiOperation(value = "Get hotel checks",notes = "Get hotel unfinished checks.",
+            response = CheckVo.class, responseContainer = "List",produces = "application/json;charset=UTF-8")
+    @GetMapping(value = "/{id}/unfinished", produces= MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<CheckVo> unfinishedChecks(@PathVariable int id) {
+        HotelVo hotelVo = hotelService.getHotelDetail(id);
+        return hotelVo.getRoomVos().stream()
+                .flatMap(roomVo -> roomService.getUnfinishedChecks(roomVo.getId()).stream())
+                .collect(Collectors.toList());
     }
 
     @ApiOperation(value = "Get hotel reservations",notes = "Get all reservations of a hotel.",

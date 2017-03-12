@@ -61,7 +61,6 @@ public class CheckController {
     public ResultVo<TenantVo> addTenant(@Valid @RequestBody TenantJson tenantJson) {
         TenantEntity tenantEntity = new TenantEntity();
         tenantEntity.setName(tenantJson.getName());
-        tenantEntity.setPhone(tenantJson.getPhone());
         tenantEntity.setIdCard(tenantJson.getIdCard());
         return new ResultVo<>(ErrorCode.SUCCESS, MessageConstant.SUCCESS,
                 new TenantVo(tenantDao.findById(tenantDao.save(tenantEntity).getId())));

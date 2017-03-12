@@ -145,6 +145,7 @@ public class RoomServiceImpl implements RoomService {
         checkRecordEntity.setEnd(end);
         checkRecordEntity.setState(CheckState.checkIn);
         checkRecordEntity.setPayway(PayWay.cash);
+        checkRecordEntity.setPay(0);
         checkRecordEntity.setTenantEntities(tenants.stream()
                 .map(integer -> tenantDao.findById(integer)).collect(Collectors.toList()));
         MemberEntity memberEntity = memberDao.findById(memberId);

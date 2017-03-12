@@ -10,10 +10,10 @@ import javax.persistence.*;
 public class TenantEntity {
     private int id;
     private String name;
-    private String phone;
     private String idCard;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public int getId() {
         return id;
@@ -31,16 +31,6 @@ public class TenantEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Basic
-    @Column(name = "phone")
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     @Basic
@@ -62,7 +52,6 @@ public class TenantEntity {
 
         if (id != that.id) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (phone != null ? !phone.equals(that.phone) : that.phone != null) return false;
         if (idCard != null ? !idCard.equals(that.idCard) : that.idCard != null) return false;
 
         return true;
@@ -72,7 +61,6 @@ public class TenantEntity {
     public int hashCode() {
         int result = id;
         result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (phone != null ? phone.hashCode() : 0);
         result = 31 * result + (idCard != null ? idCard.hashCode() : 0);
         return result;
     }

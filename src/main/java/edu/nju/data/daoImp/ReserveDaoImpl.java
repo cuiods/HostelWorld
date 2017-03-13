@@ -54,6 +54,11 @@ public class ReserveDaoImpl implements ReserveDao {
         return reserveEntities.get(0);
     }
 
+    @Override
+    public List<ReserveEntity> findByRoomAndCreateAfter(int roomId, Timestamp createdAt) {
+        return reserveRepository.findByRoomEntity_IdAndCreatedAtAfter(roomId, createdAt);
+    }
+
     /**
      * Delete reserve(set deleted_at)
      *

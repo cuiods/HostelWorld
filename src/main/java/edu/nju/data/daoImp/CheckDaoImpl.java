@@ -7,6 +7,7 @@ import edu.nju.util.enums.CheckState;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -55,5 +56,10 @@ public class CheckDaoImpl implements CheckDao {
     @Override
     public List<CheckRecordEntity> findByRoomIdAndState(int roomId, CheckState state) {
         return checkRepository.findByRoomEntity_IdAndState(roomId, state);
+    }
+
+    @Override
+    public List<CheckRecordEntity> findByRoomAndCreateAfter(int roomId, Timestamp createdAt) {
+        return checkRepository.findByRoomEntity_IdAndCreatedAtAfter(roomId, createdAt);
     }
 }

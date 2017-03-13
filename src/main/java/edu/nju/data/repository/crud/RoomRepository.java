@@ -13,6 +13,8 @@ import java.util.List;
  */
 public interface RoomRepository extends CrudRepository<RoomEntity, Integer>{
 
+    List<RoomEntity> findByHotelEntity_Id(int hotelEntity_Id);
+
     List<RoomEntity> findByHotelEntity_IdAndBedType(int hotelEntity_Id, BedType bedType);
 
     List<RoomEntity> findByHotelEntity_IdAndRoomType(int hotelEntity_Id, String roomType);

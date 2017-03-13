@@ -3,6 +3,8 @@ package edu.nju.data.dao;
 import edu.nju.data.entity.ReserveEntity;
 
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * Reserve entity dao
@@ -29,6 +31,8 @@ public interface ReserveDao {
      * @return memberReserve
      */
     ReserveEntity findMemberReserve(int memberId, int roomId, Date start, Date end);
+
+    List<ReserveEntity> findByRoomAndCreateAfter(int roomId, Timestamp createdAt);
 
     /**
      * Delete reserve(set deleted_at)

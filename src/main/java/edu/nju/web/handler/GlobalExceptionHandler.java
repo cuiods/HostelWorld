@@ -26,13 +26,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value=MethodArgumentNotValidException.class)
     public ResultVo<List> methodArgumentNotValidHandler(MethodArgumentNotValidException exception) throws Exception {
         List<ArgInvalidResult> invalidArguments = new ArrayList<>();
-        for (FieldError error : exception.getBindingResult().getFieldErrors()) {
+        exception.getBindingResult().getFieldErrors().forEach(error -> {
             ArgInvalidResult invalidArgument = new ArgInvalidResult();
             invalidArgument.setDefaultMessage(error.getDefaultMessage());
             invalidArgument.setField(error.getField());
             invalidArgument.setRejectedValue(error.getRejectedValue());
             invalidArguments.add(invalidArgument);
-        }
+        });
         return new ResultVo<>(ErrorCode.WRONG_PARAMETER, MessageConstant.WRONG_PARAMETER,invalidArguments);
     }
 

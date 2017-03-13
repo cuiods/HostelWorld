@@ -6,6 +6,7 @@ import edu.nju.data.repository.crud.RoomRepository;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Room dao impl
@@ -31,5 +32,15 @@ public class RoomDaoImpl implements RoomDao {
     @Override
     public RoomEntity save(RoomEntity roomEntity) {
         return roomRepository.save(roomEntity);
+    }
+
+    @Override
+    public List<RoomEntity> findByHotelId(int hotelId) {
+        return roomRepository.findByHotelEntity_Id(hotelId);
+    }
+
+    @Override
+    public List<RoomEntity> findAll() {
+        return (List<RoomEntity>) roomRepository.findAll();
     }
 }

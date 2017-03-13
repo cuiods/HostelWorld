@@ -3,6 +3,7 @@ package edu.nju.data.dao;
 import edu.nju.data.entity.CheckRecordEntity;
 import edu.nju.util.enums.CheckState;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -38,5 +39,7 @@ public interface CheckDao {
      * @return list of {@link CheckRecordEntity}
      */
     List<CheckRecordEntity> findByRoomIdAndState(int roomId, CheckState state);
+
+    List<CheckRecordEntity> findByRoomAndCreateAfter(int roomId, Timestamp createdAt);
 
 }

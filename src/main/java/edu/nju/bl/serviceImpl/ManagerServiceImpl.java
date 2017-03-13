@@ -132,9 +132,13 @@ public class ManagerServiceImpl implements ManagerService {
      */
     @Override
     public ResultVo<Boolean> completeCheckOutRecord(List<Integer> checkIds) throws HostelException {
-        for (Integer integer: checkIds) {
-            completeCheckOutRecord(integer);
-        }
+        checkIds.forEach(c -> {
+            try {
+                completeCheckOutRecord(c);
+            } catch (HostelException e) {
+                e.printStackTrace();
+            }
+        });
         return new ResultVo<>(ErrorCode.SUCCESS, MessageConstant.SUCCESS,true);
     }
 }

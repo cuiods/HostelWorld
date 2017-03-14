@@ -21,6 +21,7 @@ import java.util.List;
 public class HotelVo {
     private int id;
     private String phone;
+    private String avatar;
     private Timestamp createdAt;
     private Timestamp updateAt;
     private String fullname;
@@ -53,6 +54,7 @@ public class HotelVo {
         summary = hotelEntity.getSummary();
         star = hotelEntity.getStar();
         picture = hotelEntity.getPicture();
+        avatar = hotelEntity.getAvatar();
         this.roomVos = roomVos;
     }
 }

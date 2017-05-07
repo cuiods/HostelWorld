@@ -9,8 +9,6 @@ import javax.validation.constraints.Pattern;
  */
 @Data
 public class DateRangeJson {
-    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}/",message = "Unsupported date format.")
     private String start;
-    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}",message = "Unsupported date format.")
     private String end;
 }

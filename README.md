@@ -172,7 +172,11 @@ return hotelPageRepository.findAll(pageable);
 采用服务端签名的方法提高安全性。
 
 ##Get Started
-运行`HostelWorldApplication`中的main方法，端口配置在`resources/application.yml`文件中，数据库表结构见`hostel.sql`。
+ 1. 新建Mysql数据库hostel，导入项目根目录的hostel.sql文件
+ 2. 编译项目，运行HostelWorldApplication中的main方法
+ 3. 访问[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)查看后端API
+ 4. 前端项目运行需要查看[系统前端](https://github.com/cuiods/HostelWorld-Front)
+ 5. 如果需要部署，使用mvn package -Dmaven.test.skip=true打包，然后直接运行java -jar [name].jar即可。
 
 ##License
 [MIT](https://tldrlegal.com/license/mit-license)

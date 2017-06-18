@@ -1,12 +1,10 @@
 # HostelWorld
 
-基于SpringBoot+Hibernate+Spring+Swagger+Spring Security+Spring Data JPA实现的 HostelWorld 系统后端
-
-===
+基于SpringBoot+Hibernate+Spring+Swagger+Spring Security+Spring Data JPA实现的 HostelWorld 系统后端<br/>
 
 [系统前端](https://github.com/cuiods/HostelWorld-Front)
 
-##Introduction
+## Introduction
 HostelWorld系统后端采用全Restful风格API，并使用Swagger UI制定了详细的API文档，运行项目后访问[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)就可以查看项目的所有API。
 系统主要分为以下十个模块：
 
@@ -21,11 +19,11 @@ HostelWorld系统后端采用全Restful风格API，并使用Swagger UI制定了�
  * /stat： 系统数据统计
  * /upload： 阿里云对象存储获取服务端签名
 
-##Features
-####1、使用Swagger制定API文档
+## Features
+#### 1、使用Swagger制定API文档
 ![](http://ww1.sinaimg.cn/large/005N9RKSgy1fdmd9uasqvj31fq0obtbz)
 ![](http://ww1.sinaimg.cn/large/005N9RKSly1fdmdb9cwzpj31dt0phgnm)
-####2、全面使用函数式编程
+#### 2、全面使用函数式编程
 项目中所有的业务逻辑代码全部使用[Java8函数式编程](http://blog.csdn.net/cuiods/article/category/6603088)。<br/>
 下面是数据统计方法中的一部分示例：
 ```java
@@ -45,7 +43,7 @@ weekChecks.stream()
         .collect(groupingBy(check -> (check.getCreatedAt().getTime()-aWeekAgo.getTime())/86400000))
         .forEach((aLong, checkRecordEntities) -> statisticVo.setChecks(aLong, checkRecordEntities.size()));
 ```
-####3、 JSR-303 @Valid后端验证
+#### 3、 JSR-303 @Valid后端验证
 采用前后端结合的方式进行输入验证，后端主要使用JSR-303 @Valid注解验证。
 ```java
 @Data
@@ -62,7 +60,7 @@ public class CheckJson {
 }
 
 ```
-####4、错误码和异常处理
+#### 4、错误码和异常处理
 项目建立了完整的错误码体系。以下是几个示例:
 
 | 错误码        | 字段    |  描述  |
@@ -89,7 +87,7 @@ public class GlobalExceptionHandler {
     ......
 }
 ```
-####5、Spring Security权限验证
+#### 5、Spring Security权限验证
 系统用户根据角色分配有6种不同的权限，每次Http请求都会分析用户权限从而判断该操作是否可以进行。Http请求采用基本的Http Baisc Auth验证。
 系统的权限包括：
 
@@ -104,7 +102,7 @@ public class GlobalExceptionHandler {
 
 权限配置见[SecurityConfig.java](https://github.com/cuiods/HostelWorld/blob/master/src/main/java/edu/nju/web/security/SecurityConfig.java)
 
-####6、Slf4j + logback日志系统
+#### 6、Slf4j + logback日志系统
 对控制器Controller方法定义切面，记录每一次请求的详细信息。
 ```
 2017-03-14 11:51:52.750  INFO 4740 --- [http-nio-8080-exec-3] edu.nju.web.log.WebLogAspect             : URL : http://localhost:8080/api/v1/manager/hotel/new
@@ -114,7 +112,7 @@ public class GlobalExceptionHandler {
 2017-03-14 11:51:52.751  INFO 4740 --- [http-nio-8080-exec-3] edu.nju.web.log.WebLogAspect             : ARGS : []
 2017-03-14 11:51:52.775  INFO 4740 --- [http-nio-8080-exec-3] edu.nju.web.log.WebLogAspect             : RESPONSE : [HotelVo(id=22, phone=00000000000, avatar=http://hostel-world.oss-cn-shanghai.aliyuncs.com/images/avatar.png, createdAt=2017-03-10 12:44:14.0......
 ```
-####7、lombok插件
+#### 7、lombok插件
 使用lombok插件自动生成get、set、构造器等方法。
 ```java
 @Data
@@ -128,8 +126,8 @@ public class AccountVo {
     }
 }
 ```
-####8、数据库设计
-##### （1）继承
+#### 8、数据库设计
+#####  （1）继承
 `@Inheritance(strategy = InheritanceType.JOINED)`使用JOIN继承策略，子类表只保存相对于父类额外的属性。
 父类User表定义：
 ```java
@@ -146,7 +144,8 @@ public class UserEntity {
 @PrimaryKeyJoinColumn(name = "id")
 public class MemberEntity extends UserEntity{
 ```
-#####（2）表关联与懒加载
+
+##### （2）表关联与懒加载
 默认获取关联表时是懒加载，调用get方法后会自动从数据库里查询出来。
 ```java
 @OneToMany
@@ -157,26 +156,26 @@ public List<AccountEntity> getAccountEntities() {
 ```
 使用`(fetch = FetchType.EAGER)`强制直接从数据库里查到相关属性，不需要调用get方法
 
-#####（3）分页查询
+##### （3）分页查询
 ```java
 Sort sort = new Sort(sortDirection, sortColumn);
 Pageable pageable = new PageRequest(page,pageSize,sort);
 return hotelPageRepository.findAll(pageable);
 ```
-#####（4）软删除
+##### （4）软删除
 删除时设置deleted_at为删除时间，取出数据时要求deleted_at为null。
 ```java
 @Where(clause="deleted_at is null")
 ```
-####9、阿里云OSS后端签名
+#### 9、阿里云OSS后端签名
 采用服务端签名的方法提高安全性。
 
-##Get Started
+## Get Started
  1. 新建Mysql数据库hostel，导入项目根目录的hostel.sql文件
  2. 编译项目，运行HostelWorldApplication中的main方法
  3. 访问[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)查看后端API
  4. 前端项目运行需要查看[系统前端](https://github.com/cuiods/HostelWorld-Front)
  5. 如果需要部署，使用mvn package -Dmaven.test.skip=true打包，然后直接运行java -jar [name].jar即可。
 
-##License
+## License
 [MIT](https://tldrlegal.com/license/mit-license)
